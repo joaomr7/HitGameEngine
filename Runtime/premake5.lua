@@ -25,22 +25,3 @@ project "Runtime"
     {
         "HitEngine"
     }
-
-    filter "system:windows"
-        systemversion "latest"
-
-    filter "configurations:Debug"
-        symbols "On"
-
-        defines 
-        {
-            "_DEBUG"
-        }
-
-        buildoptions 
-        {
-            "/MDd",
-		}
-
-    filter "configurations:Release"
-        optimize "On"
