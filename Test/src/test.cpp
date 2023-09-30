@@ -1,7 +1,10 @@
- #include "TestFramework.h"
+#undef MSVC
+
+#include "TestFramework.h"
 #include "Tests/MemoryTest.h"
 #include "Tests/TypedArenaTest.h"
 #include "Tests/FastTypedArenaTest.h"
+#include "Tests/HandleListTest.h"
 
 using namespace hit;
 
@@ -27,6 +30,7 @@ int main()
     //add_memory_system_tests(test_system);
     add_typed_arena_tests(test_system);
     add_fast_typed_arena_tests(test_system);
+    add_handle_list_tests(test_system);
 
     test_system.run_all();
     

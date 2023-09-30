@@ -13,7 +13,7 @@ namespace hit
             enum Type
             {
                 Any,
-
+                Handle_List,
             };
 
             Type usage = Any;
@@ -59,6 +59,9 @@ struct std::formatter<hit::MemoryUsage>
         {
             case hit::MemoryUsage::Any: 
                 return std::format_to(ctx.out(), "Any");
+
+            case hit::MemoryUsage::Handle_List:
+                return std::format_to(ctx.out(), "Handle_List");
 
             default: 
                 return std::format_to(ctx.out(), "None");

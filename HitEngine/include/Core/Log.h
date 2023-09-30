@@ -4,7 +4,7 @@
 #include <string>
 #include <string_view>
 
-#ifdef HIT_RELEASE
+#if defined(HIT_RELEASE) and not defined(HIT_FORCE_RELEASE_LOG)
 #define hit_trace(fmt, ...)
 #define hit_info(fmt, ...)
 #define hit_warning(fmt, ...)

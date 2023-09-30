@@ -1,14 +1,25 @@
 #pragma once
 
+#ifdef HIT_RELEASE
+#define HIT_FORCE_RELEASE_LOG
+#endif
+
 #include "Core/Log.h"
 #include "Core/Memory.h"
 
 #include <vector>
 #include <utility>
 #include <iostream>
+#include <ctime>
+#include <cstdlib>
 
 #define test_check(condition) { if(!(condition)) { return hit::TEST_ERROR; } else { hit_info("Test({}) success.", #condition); } }
 #define test_expect(condition, expct) { if((condition) != (expct)) { return hit::TEST_ERROR; } else { hit_info("Test({}) success.", #condition); } }
+
+#define test_silent_check(condition) { if(!(condition)) { return hit::TEST_ERROR; } }
+#define test_silent_expect(condition, expct) { if(!(condition)) { return hit::TEST_ERROR; } }
+
+#define test_random_number(min, max) (rand() % (max) + (min))
 
 #define test_success() return hit::TEST_SUCCESS;
 #define test_failure() return hit::TEST_ERROR;
@@ -38,6 +49,8 @@ namespace hit
         {
             Log::initialize_log_system();
             Memory::initialize_memory_system();
+
+            srand((unsigned)time(NULL));
         }
 
         void shutdown()

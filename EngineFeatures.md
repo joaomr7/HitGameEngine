@@ -5,7 +5,7 @@
 - [X] Memory system
 - [ ] Module system
 - [X] Arenas
-- [ ] Handle List
+- [X] Handle List
 
 ## Platform Features:
 - [ ] Window system
