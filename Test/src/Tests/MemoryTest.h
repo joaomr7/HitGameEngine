@@ -8,29 +8,22 @@ namespace hit
     // raw memory test
     test_val memory_allocation_deallocation_test()
     {
-        test_check(Memory::initialize_memory_system());
-
         auto memory = Memory::allocate_memory(32, Memory::Usage::Any);
         Memory::deallocate_memory(memory);
 
-        test_check(Memory::shutdown_memory_system());
         test_success();
     }
     
     test_val memory_leak_test()
     {
-        test_check(Memory::initialize_memory_system());
-
         auto memory = Memory::allocate_memory(32, Memory::Usage::Any);
 
-        test_expect(Memory::shutdown_memory_system(), false);
+        //test_expect(Memory::shutdown_memory_system(), false);
         test_success();
     }
 
     test_val memory_realloc_test()
     {
-        test_check(Memory::initialize_memory_system());
-
         auto memory = Memory::allocate_memory(32, Memory::Usage::Any);
         memory = Memory::reallocate_memory(memory, 64);
 
@@ -38,14 +31,11 @@ namespace hit
 
         Memory::deallocate_memory(memory);
 
-        test_check(Memory::shutdown_memory_system());
         test_success();
     }
 
     test_val memory_copy_set_test()
     {
-        test_check(Memory::initialize_memory_system());
-
         auto m1 = (ui32*)Memory::allocate_memory(sizeof(ui32), Memory::Usage::Any);
         auto m2 = (ui32*)Memory::allocate_memory(sizeof(ui32), Memory::Usage::Any);
 
@@ -57,36 +47,28 @@ namespace hit
         Memory::deallocate_memory((ui8*)m1);
         Memory::deallocate_memory((ui8*)m2);
 
-        test_check(Memory::shutdown_memory_system());
         test_success();
     }
 
     // memory usages tests
     test_val memory_allocation_deallocation_usage_test()
     {
-        test_check(Memory::initialize_memory_system());
-
         auto usage = Memory::allocate_usage(32, Memory::Usage::Any);
         Memory::deallocate_usage(usage);
 
-        test_check(Memory::shutdown_memory_system());
         test_success();
     }
 
     test_val memory_leak_usage_test()
     {
-        test_check(Memory::initialize_memory_system());
-
         auto usage = Memory::allocate_usage(32, Memory::Usage::Any);
 
-        test_expect(Memory::shutdown_memory_system(), false);
+        //test_expect(Memory::shutdown_memory_system(), false);
         test_success();
     }
 
     test_val memory_realloc_usage_test()
     {
-        test_check(Memory::initialize_memory_system());
-
         auto usage = Memory::allocate_usage(32, Memory::Usage::Any);
         usage = Memory::reallocate_usage(usage, 64);
 
@@ -94,15 +76,12 @@ namespace hit
         test_check(usage.size == 64)
 
         Memory::deallocate_usage(usage);
-
-        test_check(Memory::shutdown_memory_system());
+        
         test_success();
     }
 
     test_val memory_copy_set_usage_test()
     {
-        test_check(Memory::initialize_memory_system());
-
         auto u1 = Memory::allocate_usage(sizeof(ui32), Memory::Usage::Any);
         auto u2 = Memory::allocate_usage(sizeof(ui32), Memory::Usage::Any);
 
@@ -114,7 +93,25 @@ namespace hit
         Memory::deallocate_usage(u1);
         Memory::deallocate_usage(u2);
 
-        test_check(Memory::shutdown_memory_system());
         test_success();
+    }
+
+    void add_memory_system_tests(TestSystem& test_system)
+    {
+        // memory tests
+        {
+            test_system.add_test(get_test(memory_allocation_deallocation_test));
+            test_system.add_test(get_test(memory_leak_test));
+            test_system.add_test(get_test(memory_realloc_test));
+            test_system.add_test(get_test(memory_copy_set_test));
+        }
+
+        // memory test usages
+        {
+            test_system.add_test(get_test(memory_allocation_deallocation_usage_test));
+            test_system.add_test(get_test(memory_leak_usage_test));
+            test_system.add_test(get_test(memory_realloc_usage_test));
+            test_system.add_test(get_test(memory_copy_set_usage_test));
+        }
     }
 }

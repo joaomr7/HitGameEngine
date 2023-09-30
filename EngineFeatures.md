@@ -4,7 +4,7 @@
 - [X] Log system
 - [X] Memory system
 - [ ] Module system
-- [ ] Arenas
+- [X] Arenas
 - [ ] Handle List
 
 ## Platform Features:

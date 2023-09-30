@@ -41,7 +41,7 @@ namespace hit::Memory
 #ifdef HIT_DEBUG
             for(auto& [_memory, _usage] : s_memory_system->usages)
             {
-                hit_trace("Memory: {}, Size: {}.", (void*)_memory, _usage.size);
+                hit_trace("{}", _usage);
             }
 #endif
 
@@ -195,9 +195,11 @@ namespace hit::Memory
         return s_memory_system->usages[memory];
     }
 
-    void deallocate_usage(const Usage& usage)
+    void deallocate_usage(Usage& usage)
     {
         deallocate_memory(usage.memory);
+        usage.memory = nullptr;
+        usage.size = 0;
     }
 
     Usage reallocate_usage(Usage& usage, ui64 new_size)

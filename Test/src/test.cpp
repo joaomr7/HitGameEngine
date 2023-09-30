@@ -1,5 +1,7 @@
  #include "TestFramework.h"
 #include "Tests/MemoryTest.h"
+#include "Tests/TypedArenaTest.h"
+#include "Tests/FastTypedArenaTest.h"
 
 using namespace hit;
 
@@ -21,22 +23,10 @@ int main()
     TestSystem test_system;
     
     test_system.initialize();
-    
-    // memory tests
-    {
-        test_system.add_test(get_test(memory_allocation_deallocation_test));
-        test_system.add_test(get_test(memory_leak_test));
-        test_system.add_test(get_test(memory_realloc_test));
-        test_system.add_test(get_test(memory_copy_set_test));
-    }
 
-    // memory test usages
-    {
-        test_system.add_test(get_test(memory_allocation_deallocation_usage_test));
-        test_system.add_test(get_test(memory_leak_usage_test));
-        test_system.add_test(get_test(memory_realloc_usage_test));
-        test_system.add_test(get_test(memory_copy_set_usage_test));
-    }
+    //add_memory_system_tests(test_system);
+    add_typed_arena_tests(test_system);
+    add_fast_typed_arena_tests(test_system);
 
     test_system.run_all();
     

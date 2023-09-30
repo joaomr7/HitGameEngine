@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Log.h"
+#include "Core/Memory.h"
 
 #include <vector>
 #include <utility>
@@ -36,10 +37,12 @@ namespace hit
         void initialize()
         {
             Log::initialize_log_system();
+            Memory::initialize_memory_system();
         }
 
         void shutdown()
         {
+            Memory::shutdown_memory_system();
             Log::shutdown_log_system();
         }
 

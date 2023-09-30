@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Types.h"
+#include "Log.h"
 
 namespace hit
 {
@@ -15,9 +16,9 @@ namespace hit
 
             };
 
-            Type usage;
-            ui64 size;
-            ui8* memory;
+            Type usage = Any;
+            ui64 size = 0;
+            ui8* memory = nullptr;
         };
 
         bool initialize_memory_system();
@@ -34,11 +35,45 @@ namespace hit
         Usage get_usage(ui8* memory);
 
         Usage allocate_usage(ui64 size, Usage::Type usage);
-        void deallocate_usage(const Usage& usage);
+        void deallocate_usage(Usage& usage);
 
         Usage reallocate_usage(Usage& usage, ui64 new_size);
         Usage copy_usage(Usage& dest, const Usage& src, ui64 copy_size);
 
         Usage set_usage_memory(Usage& usage, i32 value, ui64 size);
     }
+
+    using MemoryUsage = Memory::Usage::Type;
 }
+
+//Usage custom string format
+template<>
+struct std::formatter<hit::MemoryUsage>
+{
+    constexpr auto parse(std::format_parse_context& ctx) {
+        return ctx.begin();
+    }
+
+    auto format(hit::MemoryUsage usage, std::format_context& ctx) {
+        switch (usage)
+        {
+            case hit::MemoryUsage::Any: 
+                return std::format_to(ctx.out(), "Any");
+
+            default: 
+                return std::format_to(ctx.out(), "None");
+        }
+    }
+};
+
+template<>
+struct std::formatter<hit::Memory::Usage> 
+{
+    constexpr auto parse(std::format_parse_context& ctx) {
+        return ctx.begin();
+    }
+
+    auto format(const hit::Memory::Usage& usage, std::format_context& ctx) {
+        return std::format_to(ctx.out(), "Usage[{}], size:{}, type:{}", (void*)usage.memory, usage.size, usage.usage);
+    }
+};
