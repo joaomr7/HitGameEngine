@@ -14,6 +14,7 @@ namespace hit
             {
                 Any,
                 Handle_List,
+                Reference_Count,
             };
 
             Type usage = Any;
@@ -33,6 +34,7 @@ namespace hit
         ui8* set_memory(ui8* memory, i32 value, ui64 size);
 
         Usage get_usage(ui8* memory);
+        bool has_memory(ui8* memory);
 
         Usage allocate_usage(ui64 size, Usage::Type usage);
         void deallocate_usage(Usage& usage);
@@ -41,6 +43,21 @@ namespace hit
         Usage copy_usage(Usage& dest, const Usage& src, ui64 copy_size);
 
         Usage set_usage_memory(Usage& usage, i32 value, ui64 size);
+
+        template<typename T>
+        T* allocate_initialized_memory(const T& t = T(), Usage::Type usage = Usage::Any)
+        {
+            auto memory = (T*)allocate_memory(sizeof(T), usage);
+            new (memory) T(t);
+            return memory;
+        }
+
+        template<typename T>
+        void deallocate_initialized_memory(T* t)
+        {
+            t->~T();
+            deallocate_memory((ui8*)t);
+        }
     }
 
     using MemoryUsage = Memory::Usage::Type;
@@ -62,6 +79,9 @@ struct std::formatter<hit::MemoryUsage>
 
             case hit::MemoryUsage::Handle_List:
                 return std::format_to(ctx.out(), "Handle_List");
+
+            case hit::MemoryUsage::Reference_Count:
+                return std::format_to(ctx.out(), "Reference_Count");
 
             default: 
                 return std::format_to(ctx.out(), "None");

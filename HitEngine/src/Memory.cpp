@@ -189,6 +189,12 @@ namespace hit::Memory
         return memory_usage_location->second;
     }
 
+    bool has_memory(ui8* memory)
+    {
+        auto memory_usage_location = s_memory_system->usages.find(memory);
+        return memory_usage_location != s_memory_system->usages.end();
+    }
+
     Usage allocate_usage(ui64 size, Usage::Type usage)
     {
         auto memory = allocate_memory(size, usage);
