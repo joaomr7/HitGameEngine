@@ -15,6 +15,7 @@ namespace hit
                 Any,
                 Handle_List,
                 Reference_Count,
+                Platform
             };
 
             Type usage = Any;
@@ -44,11 +45,11 @@ namespace hit
 
         Usage set_usage_memory(Usage& usage, i32 value, ui64 size);
 
-        template<typename T>
-        T* allocate_initialized_memory(const T& t = T(), Usage::Type usage = Usage::Any)
+        template<typename T, typename... Args>
+        T* allocate_initialized_memory(Usage::Type usage = Usage::Any, Args&&... args)
         {
             auto memory = (T*)allocate_memory(sizeof(T), usage);
-            new (memory) T(t);
+            new (memory) T(std::forward<Args>(args)...);
             return memory;
         }
 
@@ -82,6 +83,9 @@ struct std::formatter<hit::MemoryUsage>
 
             case hit::MemoryUsage::Reference_Count:
                 return std::format_to(ctx.out(), "Reference_Count");
+
+            case hit::MemoryUsage::Platform:
+                return std::format_to(ctx.out(), "Platform");
 
             default: 
                 return std::format_to(ctx.out(), "None");

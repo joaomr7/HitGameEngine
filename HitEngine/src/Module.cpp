@@ -3,6 +3,8 @@
 #include "Core/Assert.h"
 #include "Core/Log.h"
 
+#include <ranges>
+
 namespace hit
 {
     ModulePipeline::~ModulePipeline()
@@ -26,7 +28,8 @@ namespace hit
 
     void ModulePipeline::shutdown_pipeline()
     {
-        for(auto& module : m_modules)
+        // shutdown in reverse order
+        for(auto& module : m_modules | std::ranges::views::reverse)
         {
             module->shutdown();
         }
@@ -40,7 +43,7 @@ namespace hit
     {
         for(auto& module : m_modules)
         {
-            if(!module->execute())
+            if(!module->execute()) [[unlikely]]
             {
                 return false;
             }

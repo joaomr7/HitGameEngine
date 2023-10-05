@@ -1,3 +1,5 @@
+include "Dependencies.lua"
+
 workspace "HitEngine"
     architecture "x64"
 
@@ -44,6 +46,10 @@ workspace "HitEngine"
         }
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+
+group "Dependencies"
+include "Dependencies/GLFW"
+group ""
 
 include "HitEngine"
 include "Runtime"

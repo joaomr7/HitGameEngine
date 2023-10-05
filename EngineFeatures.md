@@ -3,12 +3,12 @@
 ## Core Features:
 - [X] Log system
 - [X] Memory system
-- [ ] Module system
+- [X] Module system
 - [X] Arenas
 - [X] Handle List
 
 ## Platform Features:
-- [ ] Window system
+- [X] Window system
 - [ ] Window event system
 - [ ] Load dll(or the platform alternative) game script
 

@@ -18,4 +18,10 @@ project "HitEngine"
     includedirs 
     {
         "%{wks.location}/HitEngine/include",
+        "%{include_dir.GLFW}"
+    }
+
+    links
+    {
+        "GLFW"
     }

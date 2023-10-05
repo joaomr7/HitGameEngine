@@ -20,7 +20,7 @@ namespace hit
         return std::shared_ptr<T>(new T(std::forward<Args>(args)...), [](T* ptr) { });
     }
 
-    template<typename T, typename U> 
+    template<typename U, typename T> 
     constexpr Ref<U> cast_ref(const Ref<T> t)
     {
         return std::static_pointer_cast<U>(t);
