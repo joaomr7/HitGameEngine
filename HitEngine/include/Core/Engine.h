@@ -5,6 +5,7 @@
 #include "Assert.h"
 #include "Memory.h"
 #include "Module.h"
+#include "Platform/Event.h"
 
 #include <string>
 
@@ -34,6 +35,11 @@ namespace hit
         inline const std::string& get_game_name() const { return m_engine_data.game_name; }
         inline ui16 get_window_width() const { return m_engine_data.main_window_width; }
         inline ui16 get_window_height() const { return m_engine_data.main_window_height; }
+
+    private:
+        void handle_event(Event& event);
+        bool handle_window_resize_event(WindowResizeEvent& event);
+        bool handle_window_close_event(WindowCloseEvent& event);
 
     private:
         EngineData m_engine_data;

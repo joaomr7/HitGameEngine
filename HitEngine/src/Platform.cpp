@@ -54,10 +54,10 @@ namespace hit
         s_main_window = window;
     }
 
-    Window* Platform::create_window(const WindowSpecification& specification)
+    Window* Platform::create_window(const WindowSpecification& specification, const EventCallback& callback)
     {
         s_window_count++;
-        return Memory::allocate_initialized_memory<Window>(MemoryUsage::Platform, specification);
+        return Memory::allocate_initialized_memory<Window>(MemoryUsage::Platform, specification, callback);
     }
 
     void Platform::destroy_window(Window* window)

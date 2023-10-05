@@ -2,6 +2,7 @@
 
 #include "Core/Types.h"
 #include "Core/Module.h"
+#include "Event.h"
 
 #include <string>
 
@@ -21,7 +22,7 @@ namespace hit
         void shutdown() override;
         bool execute() override;
 
-        static Window* create_window(const WindowSpecification& specification);
+        static Window* create_window(const WindowSpecification& specification, const EventCallback& callback);
         static void destroy_window(Window* window);
 
         static bool is_window_open(Window* window);

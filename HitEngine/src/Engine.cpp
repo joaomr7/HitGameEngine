@@ -47,7 +47,7 @@ namespace hit
             window_spec.window_height = m_engine_data.main_window_height;
 
             auto platform = cast_ref<Platform>(m_modules.get_module("Platform"));
-            main_window = platform->create_window(window_spec);
+            main_window = platform->create_window(window_spec, bind_event_function(Engine::handle_event, this));
 
             hit_assert(main_window, "Failed to create main engine window!");
 
@@ -58,6 +58,28 @@ namespace hit
         {
             m_modules.execute_modules();
         }
+    }
+
+    void Engine::handle_event(Event& event)
+    {
+        EventHandler handler(event);
+
+        handler.handle<WindowResizeEvent>(bind_event_function(Engine::handle_window_resize_event, this));
+        handler.handle<WindowCloseEvent>(bind_event_function(Engine::handle_window_close_event, this));
+    }
+
+    bool Engine::handle_window_resize_event(WindowResizeEvent& event)
+    {
+        m_engine_data.main_window_width = event.width;
+        m_engine_data.main_window_height = event.height;
+
+        return false;
+    }
+
+    bool Engine::handle_window_close_event(WindowCloseEvent& event)
+    {
+        // just pass, at moment
+        return false;
     }
 
     bool Engine::has_module(const std::string& module_name) const

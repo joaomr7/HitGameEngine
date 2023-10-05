@@ -9,7 +9,7 @@
 
 ## Platform Features:
 - [X] Window system
-- [ ] Window event system
+- [X] Window event system
 - [ ] Load dll(or the platform alternative) game script
 
 ## Renderer Features:
