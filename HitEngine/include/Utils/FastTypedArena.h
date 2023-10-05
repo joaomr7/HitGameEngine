@@ -42,8 +42,12 @@ namespace hit
         void clear();
         inline bool empty() const;
 
+        inline T* get(ui64 index);
         inline const T* get(ui64 index) const;
+
+        inline T* operator[](ui64 index);
         inline const T* operator[](ui64 index) const;
+
         inline const std::span<T> data() const;
 
         inline ui64 size() const;
@@ -286,7 +290,21 @@ namespace hit
     }
 
     template <typename T>
+    inline T* FastTypedArena<T>::get(ui64 index)
+    {
+        hit_assert(index < m_size, "Invalid TypedArena index!");
+        return &data()[index];
+    }
+
+    template <typename T>
     inline const T* FastTypedArena<T>::get(ui64 index) const
+    {
+        hit_assert(index < m_size, "Invalid TypedArena index!");
+        return &data()[index];
+    }
+
+    template <typename T>
+    inline T* FastTypedArena<T>::operator[](ui64 index)
     {
         hit_assert(index < m_size, "Invalid TypedArena index!");
         return &data()[index];
