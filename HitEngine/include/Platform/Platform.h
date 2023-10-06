@@ -5,14 +5,18 @@
 #include "Event.h"
 
 #include <string>
+#include <string_view>
 
 namespace hit
 {
     // do not include Window.h here, cause need to link it just in engine
     // to access window attributes, use the platform api
     class Window;
-
     struct WindowSpecification;
+
+    // engine representation of external dll's(or platform specific)
+    struct ExternalPackage;
+    using PackageFunction = void*;
 
     class Platform : public Module
     {
@@ -34,6 +38,11 @@ namespace hit
         static const std::string& get_window_title(Window* window);
 
         static const Window* get_main_window();
+
+        // used to load dll's(or platform specific)
+        static ExternalPackage* load_external_package(std::string_view package_path);
+        static bool unload_external_package(ExternalPackage* package);
+        static PackageFunction get_package_function(ExternalPackage* package, std::string_view function_name);
 
     private:
         static Window* s_main_window;

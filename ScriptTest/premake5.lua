@@ -1,5 +1,5 @@
-project "HitEngine"
-    kind "StaticLib"
+project "ScriptTest"
+    kind "SharedLib"
     language "C++"
     cppdialect "C++20"
     staticruntime "off"
@@ -11,23 +11,22 @@ project "HitEngine"
 
     files 
     {
-        "%{wks.location}/HitEngine/include/**.h",
-        "%{wks.location}/HitEngine/src/**.cpp",
+        "%{wks.location}/ScriptTest/src/**.h",
+        "%{wks.location}/ScriptTest/src/**.cpp",
     }
 
     includedirs 
     {
         "%{wks.location}/HitEngine/include",
-        "%{include_dir.GLFW}"
     }
 
     links
     {
-        "GLFW"
+        "HitEngine"
     }
 
-    filter "system:windows"
-        files
-        {
-            "%{wks.location}/HitEngine/win64/**.cpp"
-        }
+    runtime_output_dir = "%{wks.location}/bin/" .. outputdir .. "/Runtime"
+    postbuildcommands
+    {
+        "{COPY} %{cfg.buildtarget.relpath} %{runtime_output_dir}"
+    }

@@ -51,6 +51,10 @@ group "Dependencies"
 include "Dependencies/GLFW"
 group ""
 
+group "Script"
+include "ScriptTest"
+group ""
+
 include "HitEngine"
 include "Runtime"
 include "Test"
