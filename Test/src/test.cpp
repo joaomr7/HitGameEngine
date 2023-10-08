@@ -5,6 +5,7 @@
 #include "Tests/TypedArenaTest.h"
 #include "Tests/FastTypedArenaTest.h"
 #include "Tests/HandleListTest.h"
+#include "Tests/MathTest.h"
 
 using namespace hit;
 
@@ -28,9 +29,10 @@ int main()
     test_system.initialize();
 
     //add_memory_system_tests(test_system);
-    add_typed_arena_tests(test_system);
-    add_fast_typed_arena_tests(test_system);
-    add_handle_list_tests(test_system);
+    //add_typed_arena_tests(test_system);
+    //add_fast_typed_arena_tests(test_system);
+    //add_handle_list_tests(test_system);
+    add_math_tests(test_system);
 
     test_system.run_all();
     

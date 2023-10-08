@@ -22,8 +22,8 @@
 - [ ] Fast 3D object format load
 
 ## Math and Physics Features:
-- [ ] Vector Library
-- [ ] Matrix Library
+- [X] Vector Library
+- [X] Matrix Library
 - [ ] 2D Physics
 - [ ] 3D Physics
 
