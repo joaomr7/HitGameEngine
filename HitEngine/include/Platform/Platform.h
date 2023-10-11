@@ -21,11 +21,6 @@ namespace hit
     class Platform : public Module
     {
     public:
-
-        bool initialize() override;
-        void shutdown() override;
-        bool execute() override;
-
         static Window* create_window(const WindowSpecification& specification, const EventCallback& callback);
         static void destroy_window(Window* window);
 
@@ -39,18 +34,20 @@ namespace hit
 
         static const Window* get_main_window();
 
+        static void wait_for_valid_window_size(Window* window);
+
         // used to load dll's(or platform specific)
         static ExternalPackage* load_external_package(std::string_view package_path);
         static bool unload_external_package(ExternalPackage* package);
         static PackageFunction get_package_function(ExternalPackage* package, std::string_view function_name);
 
+    protected:
+        bool initialize() override;
+        void shutdown() override;
+        bool execute() override;
+
     private:
         static Window* s_main_window;
         static ui16 s_window_count;
-
-        // can be accessed just inside Engine
-        void set_main_window(Window* window);
-
-        friend class Engine;
     };
 }

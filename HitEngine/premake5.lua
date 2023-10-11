@@ -11,19 +11,27 @@ project "HitEngine"
 
     files 
     {
+        -- Engine code
         "%{wks.location}/HitEngine/include/**.h",
         "%{wks.location}/HitEngine/src/**.cpp",
+
+        -- Renderer API's code
+        "%{wks.location}/HitEngine/renderer_api/**.h",
+        "%{wks.location}/HitEngine/renderer_api/**.cpp",
     }
 
     includedirs 
     {
         "%{wks.location}/HitEngine/include",
-        "%{include_dir.GLFW}"
+        "%{wks.location}/HitEngine/renderer_api/Vulkan/include",
+        "%{include_dir.GLFW}",
+        "%{include_dir.VulkanSDK}",
     }
 
     links
     {
-        "GLFW"
+        "GLFW",
+        "%{libs.Vulkan}"
     }
 
     filter "system:windows"

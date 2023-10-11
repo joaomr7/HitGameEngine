@@ -16,12 +16,11 @@ namespace hit
     public:
         virtual ~Module() = default;
 
+    protected:
         virtual bool initialize() = 0;
         virtual void shutdown() = 0;
-
         virtual bool execute() = 0;
 
-    protected:
         const Engine* get_engine() { return m_engine; }
 
     private:

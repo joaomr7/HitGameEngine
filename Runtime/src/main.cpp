@@ -14,6 +14,10 @@ namespace hit
             data.main_window_width = 1280;
             data.main_window_height = 720;
 
+            // setup renderer
+            data.renderer_config.backend = RendererBackend::Vulkan;
+            data.renderer_config.vsync = true;
+            data.renderer_config.power_save_mode = false;
 
             if(!engine.initialize(data))
             {

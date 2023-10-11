@@ -14,8 +14,8 @@ namespace hit
             {
                 Any,
                 Handle_List,
-                Reference_Count,
-                Platform
+                Platform,
+                Renderer,
             };
 
             Type usage = Any;
@@ -81,11 +81,11 @@ struct std::formatter<hit::MemoryUsage>
             case hit::MemoryUsage::Handle_List:
                 return std::format_to(ctx.out(), "Handle_List");
 
-            case hit::MemoryUsage::Reference_Count:
-                return std::format_to(ctx.out(), "Reference_Count");
-
             case hit::MemoryUsage::Platform:
                 return std::format_to(ctx.out(), "Platform");
+
+            case hit::MemoryUsage::Renderer:
+                return std::format_to(ctx.out(), "Renderer");
 
             default: 
                 return std::format_to(ctx.out(), "None");

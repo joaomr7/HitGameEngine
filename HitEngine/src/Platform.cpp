@@ -1,6 +1,7 @@
 #include "Platform/Platform.h"
 #include "Platform/Window.h"
 
+#include "Core/Engine.h"
 #include "Core/Assert.h"
 #include "Core/Memory.h"
 
@@ -20,6 +21,24 @@ namespace hit
 
         // set glfw api to none
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+        // create main window
+        {
+            Engine* engine = (Engine*)get_engine();
+
+            WindowSpecification main_window_spec;
+            main_window_spec.window_title = engine->get_game_name();
+            main_window_spec.window_width = engine->get_window_width();
+            main_window_spec.window_height = engine->get_window_height();
+
+            s_main_window = create_window(main_window_spec, engine->get_event_callback());
+
+            if(!s_main_window)
+            {
+                hit_error("Failed to create platform main window!");
+                return false;
+            }
+        }
 
         return true;
     }
@@ -45,13 +64,6 @@ namespace hit
         glfwPollEvents();
 
         return true;
-    }
-
-    void Platform::set_main_window(Window* window)
-    {
-        hit_assert(window, "Window ptr is invalid!");
-
-        s_main_window = window;
     }
 
     Window* Platform::create_window(const WindowSpecification& specification, const EventCallback& callback)
@@ -101,5 +113,15 @@ namespace hit
     const Window* Platform::get_main_window()
     {
         return s_main_window;
+    }
+
+    void Platform::wait_for_valid_window_size(Window* window)
+    { 
+        int w = 0, h = 0;
+        while(w == 0 || h == 0)
+        {
+            glfwGetFramebufferSize((GLFWwindow*)window->get_handle(), &w, &h);
+            glfwWaitEvents();
+        }
     }
 }

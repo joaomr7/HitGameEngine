@@ -21,6 +21,9 @@ namespace hit
 
         m_modules.set_engine(this);
         m_modules.add_module("Platform", create_ref<Platform>());
+        m_modules.add_module("Renderer", create_ref<Renderer>());
+
+        m_should_update_renderer = false;
 
         return m_modules.initialize_pipeline();
     }
@@ -39,25 +42,36 @@ namespace hit
 
     void Engine::run()
     {
-        Window* main_window = nullptr;
-        {
-            WindowSpecification window_spec;
-            window_spec.window_title = m_engine_data.game_name;
-            window_spec.window_width = m_engine_data.main_window_width;
-            window_spec.window_height = m_engine_data.main_window_height;
-
-            auto platform = cast_ref<Platform>(m_modules.get_module("Platform"));
-            main_window = platform->create_window(window_spec, bind_event_function(Engine::handle_event, this));
-
-            hit_assert(main_window, "Failed to create main engine window!");
-
-            platform->set_main_window(main_window);
-        }
+        Window* main_window = (Window*)Platform::get_main_window();
+        auto renderer = cast_ref<Renderer>(m_modules.get_module("Renderer"));
 
         while(main_window->is_running())
         {
-            m_modules.execute_modules();
+            if(!m_modules.execute_modules() && !m_should_update_renderer) [[unlikely]]
+            {
+                hit_fatal("Engine main loop fails!");
+
+                // force window to close
+                main_window->close_window();
+            }
+
+            if(m_should_update_renderer) [[unlikely]]
+            {
+                // validate width and height
+                if(m_engine_data.main_window_width == 0 || m_engine_data.main_window_height == 0)
+                {
+                    Platform::wait_for_valid_window_size(main_window);
+                }
+
+                renderer->resize(m_engine_data.main_window_width, m_engine_data.main_window_height);
+                m_should_update_renderer = false;
+            }
         }
+    }
+
+    EventCallback Engine::get_event_callback()
+    {
+        return bind_event_function(Engine::handle_event, this);
     }
 
     void Engine::handle_event(Event& event)
@@ -72,6 +86,8 @@ namespace hit
     {
         m_engine_data.main_window_width = event.width;
         m_engine_data.main_window_height = event.height;
+
+        m_should_update_renderer = true;
 
         return false;
     }

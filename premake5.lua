@@ -29,7 +29,8 @@ workspace "HitEngine"
         defines 
         {
             "_DEBUG",
-            "HIT_DEBUG"
+            "HIT_DEBUG",
+            "HIT_DEBUG_RENDER"
         }
 
         buildoptions 
@@ -42,7 +43,8 @@ workspace "HitEngine"
 
         defines
         {
-            "HIT_RELEASE"
+            "HIT_RELEASE",
+            "HIT_DEBUG_RENDER"
         }
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
