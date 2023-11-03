@@ -6,6 +6,7 @@ Hit Game Engine is an attempt to make a cross-platform, fast, simple, intuitive,
 
 ## Getting Started
 For building, Visual Studio 2022 is recommended(it's what I'm using). To download the repository, just run `git clone --recursive https://github.com/joaomr7/HitGameEngine` in your machine.
+Also, for using vulkan renderer, you need to download the Vulkan SDK.
 
 ## Plan
 
