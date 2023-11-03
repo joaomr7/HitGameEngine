@@ -1,5 +1,6 @@
 #include "VulkanSwapchain.h"
 #include "VulkanDevice.h"
+#include "VulkanRenderer.h"
 
 #include "Core/Engine.h"
 #include "Core/Log.h"
@@ -10,10 +11,12 @@
 
 namespace hit
 {
-	bool VulkanSwapchain::initialize(const VulkanSwapchainInfo& info)
+	bool VulkanSwapchain::initialize(const VulkanContext context, const VulkanSwapchainInfo& info)
 	{
+		const auto device = context->get_device();
+
 		const auto& configuration = info.engine->get_renderer_config();
-		const auto& swapchain_details = info.device->get_swapchain_support_details();
+		const auto& swapchain_details = device->get_swapchain_support_details();
 
 		// selcet first format available
 		m_format = swapchain_details.formats[0];
@@ -78,7 +81,7 @@ namespace hit
 		VkSwapchainCreateInfoKHR swapchain_info{ };
 		swapchain_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 
-		swapchain_info.surface = info.device->get_surface();
+		swapchain_info.surface = device->get_surface();
 		swapchain_info.minImageCount = m_image_count;
 		swapchain_info.imageFormat = m_format.format;
 		swapchain_info.imageColorSpace = m_format.colorSpace;
@@ -87,7 +90,7 @@ namespace hit
 		swapchain_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 		// setup queue indices
-		auto queue_indices = info.device->get_device_queues_indices();
+		auto queue_indices = device->get_device_queues_indices();
 		ui32 queue_family_indices_array[2] = { (ui32)queue_indices.graphics_index, (ui32)queue_indices.present_index };
 
 		if(queue_indices.graphics_index != queue_indices.present_index)
@@ -110,9 +113,9 @@ namespace hit
 		swapchain_info.oldSwapchain = nullptr;
 
 		auto swapchain_creation_result = vkCreateSwapchainKHR(
-			info.device->get_device(),
+			device->get_device(),
 			&swapchain_info,
-			info.device->get_alloc_callback(),
+			device->get_alloc_callback(),
 			&m_swapchain);
 
 		if(!check_vk_result(swapchain_creation_result))
@@ -122,41 +125,36 @@ namespace hit
 		}
 
 		// get swapchain images
-		vkGetSwapchainImagesKHR(info.device->get_device(), m_swapchain, &m_image_count, nullptr);
-		m_images.resize(m_image_count);
-		vkGetSwapchainImagesKHR(info.device->get_device(), m_swapchain, &m_image_count, m_images.data());
+		vkGetSwapchainImagesKHR(device->get_device(), m_swapchain, &m_image_count, nullptr);
 
-		// create image views
-		m_views.resize(m_image_count);
-		for(ui32 i = 0; i < m_image_count; i++)
+		std::vector<VkImage> images(m_image_count);
+		vkGetSwapchainImagesKHR(device->get_device(), m_swapchain, &m_image_count, images.data());
+
+		// create swapchain textures, check if textures are already created
+		if(m_images.empty())
 		{
-			VkImageViewCreateInfo view_info{ };
-			view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-			view_info.image = m_images[i];
-			view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-			view_info.format = m_format.format;
+			m_images.resize(m_image_count);
 
-			view_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-			view_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-			view_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-			view_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-
-			view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			view_info.subresourceRange.baseMipLevel = 0;
-			view_info.subresourceRange.levelCount = 1;
-			view_info.subresourceRange.baseArrayLayer = 0;
-			view_info.subresourceRange.layerCount = 1;
-
-			auto view_creation_result = vkCreateImageView(
-				info.device->get_device(),
-				&view_info,
-				info.device->get_alloc_callback(),
-				&m_views[i]);
-
-			if(!check_vk_result(view_creation_result))
+			for(ui32 i = 0; auto & image_texture : m_images)
 			{
-				hit_error("Failed to create swapchain image view!");
-				return false;
+				image_texture = create_ref<VulkanTexture>(context);
+
+				if(!image_texture->create_wraper(images[i++], nullptr, m_format.format, m_extent.width, m_extent.height, 4))
+				{
+					hit_error("Failed to create swapchain textures!");
+					return false;
+				}
+			}
+		}
+		else
+		{
+			for(ui32 i = 0; auto& image_texture : m_images)
+			{
+				if(!image_texture->create_wraper(images[i++], nullptr, m_format.format, m_extent.width, m_extent.height, 4))
+				{
+					hit_error("Failed to create swapchain textures!");
+					return false;
+				}
 			}
 		}
 
@@ -164,17 +162,18 @@ namespace hit
 	}
 
 	void VulkanSwapchain::shutdown(VulkanDevice* device)
-	{ 
-		if(!m_views.empty())
+	{
+		if(!m_images.empty())
 		{
-			for(auto& view : m_views)
+			for(auto& image : m_images)
 			{
-				vkDestroyImageView(device->get_device(), view, device->get_alloc_callback());
+				image->destroy();
+				image = nullptr;
 			}
 
-			m_views.clear();
 			m_images.clear();
 			m_image_count = 0;
+			m_max_frames_in_flight = 0;
 		}
 
 		if(m_swapchain)
@@ -182,5 +181,32 @@ namespace hit
 			vkDestroySwapchainKHR(device->get_device(), m_swapchain, device->get_alloc_callback());
 			m_swapchain = nullptr;
 		}
+	}
+
+	bool VulkanSwapchain::recreate(const VulkanContext context, const VulkanSwapchainInfo& info)
+	{
+		if(!context)
+		{
+			hit_error("Recreating swapchain with invalid context!");
+			return false;
+		}
+
+		const VulkanDevice* device = context->get_device();
+
+		if(!m_images.empty())
+		{
+			for(auto& image : m_images)
+			{
+				image->destroy();
+			}
+		}
+
+		if(m_swapchain)
+		{
+			vkDestroySwapchainKHR(device->get_device(), m_swapchain, device->get_alloc_callback());
+			m_swapchain = nullptr;
+		}
+
+		return initialize(context, info);
 	}
 }

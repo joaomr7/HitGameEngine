@@ -3,6 +3,12 @@
 #include "Core/Module.h"
 #include "Utils/Ref.h"
 
+#include "Texture.h"
+#include "Renderpass.h"
+#include "Rendergraph.h"
+
+#include <vector>
+
 namespace hit
 {
     enum class RendererBackend
@@ -21,6 +27,12 @@ namespace hit
     class Renderer : public Module
     {
     public:
+        inline ui16 get_frame_width() const { return m_frame_width; }
+        inline ui16 get_frame_height() const { return m_frame_height; }
+
+        Ref<Renderpass> acquire_renderpass() const;
+
+        std::vector<Ref<Texture>> get_swapchain_images() const;
 
     protected:
         bool initialize() override;
@@ -35,6 +47,10 @@ namespace hit
 
     private:
         void resize(ui16 width, ui16 height);
+
+    private:
+        FrameData m_frame_data;
+        Rendergraph m_graph;
 
     private:
         // backend api can access the frontend

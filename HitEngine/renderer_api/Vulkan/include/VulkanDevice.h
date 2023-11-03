@@ -45,7 +45,7 @@ namespace hit
         bool initialize(const VulkanDeviceInfo& info);
         void shutdown();
 
-        VkResult wait_idle();
+        VkResult wait_idle() const;
 
         VkResult submit_graphics_queue(const VkSubmitInfo* submit_info, VkFence fence = nullptr);
         VkResult submit_present_queue(const VkPresentInfoKHR* present_info);
@@ -56,6 +56,8 @@ namespace hit
         VkResult wait_present_queue();
         VkResult wait_compute_queue();
         VkResult wait_transfer_queue();
+
+        void update_swapchain_support();
 
     public:
         inline const VkAllocationCallbacks* get_alloc_callback() const { return m_allocation_callback; }

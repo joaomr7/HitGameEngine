@@ -23,7 +23,7 @@ namespace hit
         m_modules.add_module("Platform", create_ref<Platform>());
         m_modules.add_module("Renderer", create_ref<Renderer>());
 
-        m_should_update_renderer = false;
+        m_invalid_window_size = false;
 
         return m_modules.initialize_pipeline();
     }
@@ -43,11 +43,10 @@ namespace hit
     void Engine::run()
     {
         Window* main_window = (Window*)Platform::get_main_window();
-        auto renderer = cast_ref<Renderer>(m_modules.get_module("Renderer"));
 
-        while(main_window->is_running())
+        while(main_window->is_running()) [[likely]]
         {
-            if(!m_modules.execute_modules() && !m_should_update_renderer) [[unlikely]]
+            if(!m_modules.execute_modules() && !m_invalid_window_size) [[unlikely]]
             {
                 hit_fatal("Engine main loop fails!");
 
@@ -55,16 +54,10 @@ namespace hit
                 main_window->close_window();
             }
 
-            if(m_should_update_renderer) [[unlikely]]
+            if(m_invalid_window_size)
             {
-                // validate width and height
-                if(m_engine_data.main_window_width == 0 || m_engine_data.main_window_height == 0)
-                {
-                    Platform::wait_for_valid_window_size(main_window);
-                }
-
-                renderer->resize(m_engine_data.main_window_width, m_engine_data.main_window_height);
-                m_should_update_renderer = false;
+                Platform::wait_for_valid_window_size(main_window);
+                m_invalid_window_size = false;
             }
         }
     }
@@ -87,7 +80,10 @@ namespace hit
         m_engine_data.main_window_width = event.width;
         m_engine_data.main_window_height = event.height;
 
-        m_should_update_renderer = true;
+        auto renderer = cast_ref<Renderer>(m_modules.get_module("Renderer"));
+        renderer->resize(m_engine_data.main_window_width, m_engine_data.main_window_height);
+
+        m_invalid_window_size = event.width == 0 || event.height == 0;
 
         return false;
     }

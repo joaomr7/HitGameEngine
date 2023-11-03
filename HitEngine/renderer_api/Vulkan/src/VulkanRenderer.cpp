@@ -1,5 +1,7 @@
 #include "VulkanRenderer.h"
 
+#include "VulkanRenderpass.h"
+
 #include "Core/Engine.h"
 #include "Core/Log.h"
 #include "Platform/Platform.h"
@@ -23,9 +25,8 @@ namespace hit
         VulkanSwapchainInfo swapchain_info;
         swapchain_info.engine = (Engine*)get_engine();
         swapchain_info.window = (Window*)Platform::get_main_window();
-        swapchain_info.device = &m_device;
 
-        if(!m_swapchain.initialize(swapchain_info))
+        if(!m_swapchain.initialize(this, swapchain_info))
         {
             hit_fatal("Failed to initialize vulkan swapchain!");
             return false;
@@ -215,6 +216,32 @@ namespace hit
         return true;
     }
 
+    ui32 VulkanRenderer::get_swapchain_image_count() const
+    {
+        return m_swapchain.get_image_count();
+    }
+
+    const Ref<Texture> VulkanRenderer::get_swapchain_image(ui32 index) const
+    {
+        return m_swapchain.get_image(index);
+    }
+
+    std::vector<Ref<Texture>> VulkanRenderer::get_swapchain_images() const
+    {
+        std::vector<Ref<Texture>> images;
+        for(ui32 i = 0; i < get_swapchain_image_count(); i++)
+        {
+            images.push_back(get_swapchain_image(i));
+        }
+
+        return images;
+    }
+
+    Ref<Renderpass> VulkanRenderer::acquire_renderpass()
+    {
+        return create_ref<VulkanRenderpass>(this);
+    }
+
     bool VulkanRenderer::recreate_swapchain()
     {
         auto result = m_device.wait_idle();
@@ -224,14 +251,13 @@ namespace hit
             return false;
         }
 
-        m_swapchain.shutdown(&m_device);
+        m_device.update_swapchain_support();
 
         VulkanSwapchainInfo swapchain_info;
         swapchain_info.engine = (Engine*)get_engine();
         swapchain_info.window = (Window*)Platform::get_main_window();
-        swapchain_info.device = &m_device;
 
-        if(!m_swapchain.initialize(swapchain_info))
+        if(!m_swapchain.recreate(this, swapchain_info))
         {
             hit_error("Failed to recreate vulkan swapchain!");
             return false;

@@ -6,7 +6,6 @@
 #include "VulkanCommon.h"
 #include "VulkanDevice.h"
 #include "VulkanSwapchain.h"
-#include "VulkanContext.h"
 #include "VulkanCommand.h"
 
 #include <vector>
@@ -16,22 +15,32 @@ namespace hit
     class VulkanRenderer : public RendererAPI
     {
     public:
+        VulkanRenderer() = default;
+        ~VulkanRenderer() = default;
+
+        inline const VulkanDevice* get_device() const { return &m_device; }
+        inline const VulkanSwapchain* get_swapchain() const { return &m_swapchain; }
+
+        inline ui32 get_current_image_index() const { return m_current_image_index; }
+        inline ui32 get_current_frame() const { return m_current_frame; }
+
+        inline ui32 get_image_count() const { return m_swapchain.get_image_count(); }
+        inline ui32 get_max_frames_in_flight() const { return m_swapchain.get_max_frames_in_flight(); }
+
+        inline const VulkanCommand& get_graphics_command() const { return m_graphics_commands[m_current_image_index]; }
+
+    protected:
         bool initialize() override;
         void shutdown() override;
 
         bool begin_frame() override;
         bool end_frame() override;
 
-        inline const VulkanContext& get_context() const 
-        {
-            return
-            {
-                m_device,
-                m_swapchain,
-                m_current_image_index,
-                m_current_frame
-            };
-        }
+        ui32 get_swapchain_image_count() const override;
+        const Ref<Texture> get_swapchain_image(ui32 index) const override;
+        std::vector<Ref<Texture>> get_swapchain_images() const override;
+
+        Ref<Renderpass> acquire_renderpass() override;
 
     private:
         bool recreate_swapchain();

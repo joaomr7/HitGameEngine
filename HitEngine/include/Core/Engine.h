@@ -54,6 +54,6 @@ namespace hit
     private:
         EngineData m_engine_data;
         ModulePipeline m_modules;
-        bool m_should_update_renderer;
+        bool m_invalid_window_size;
     };
 }

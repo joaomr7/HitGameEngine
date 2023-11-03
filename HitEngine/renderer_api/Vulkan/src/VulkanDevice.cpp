@@ -403,7 +403,7 @@ namespace hit
             m_device_details = rated_devices.rbegin()->second;
 
             // get swapchain support details
-            vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_device_details.device, m_surface, &m_device_swapchain_support_details.capabilities);
+            update_swapchain_support();
 
             ui32 swapchain_formats_count;
             vkGetPhysicalDeviceSurfaceFormatsKHR(m_device_details.device, m_surface, &swapchain_formats_count, nullptr);
@@ -632,7 +632,7 @@ namespace hit
         }
     }
 
-    VkResult VulkanDevice::wait_idle()
+    VkResult VulkanDevice::wait_idle() const
     { 
         return vkDeviceWaitIdle(m_device);
     }
@@ -675,6 +675,11 @@ namespace hit
     VkResult VulkanDevice::wait_transfer_queue()
     { 
         return vkQueueWaitIdle(m_transfer_queue);
+    }
+
+    void VulkanDevice::update_swapchain_support()
+    { 
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_device_details.device, m_surface, &m_device_swapchain_support_details.capabilities);
     }
 
     DeviceQueueIndices VulkanDevice::get_device_queues_indices() const
