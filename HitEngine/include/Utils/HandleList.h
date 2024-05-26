@@ -11,11 +11,16 @@ namespace hit
     {
         inline constexpr Handle(ui32 index = UINT32_MAX, ui32 verison = UINT32_MAX);
 
+        template <typename U>
+        inline constexpr Handle(const Handle<U>& other);
+
         inline bool valid() const;
         inline bool compare_to(const Handle<T>& other) const;
 
         inline bool operator==(const Handle<T>& other) const;
         inline bool operator!=(const Handle<T>& other) const;
+
+        using type = T;
 
         ui32 index;
         ui32 version;
@@ -71,6 +76,11 @@ namespace hit
 
     template<typename T>
     inline constexpr Handle<T>::Handle(ui32 index, ui32 verison) : index(index), version(version) { }
+
+    template<typename T>
+    template<typename U>
+    inline constexpr Handle<T>::Handle(const Handle<U>& other) : index(other.index), version(other.version)
+    { }
 
     template<typename T>
     inline bool Handle<T>::valid() const

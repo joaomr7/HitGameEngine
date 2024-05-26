@@ -11,7 +11,6 @@
 
 namespace hit
 {
-    // test
     bool Renderer::initialize()
     {
         const RendererConfiguration& configuration = get_engine()->get_renderer_config();
@@ -123,8 +122,28 @@ namespace hit
         return m_backend_renderer->acquire_renderpass();
     }
 
+    Ref<RenderPipeline> Renderer::acquire_render_pipeline() const
+    {
+        return m_backend_renderer->acquire_render_pipeline();
+    }
+
+    Ref<Buffer> Renderer::acquire_buffer() const
+    {
+        return m_backend_renderer->acquire_buffer();
+    }
+
     std::vector<Ref<Texture>> Renderer::get_swapchain_images() const
     {
         return m_backend_renderer->get_swapchain_images();
+    }
+
+    bool Renderer::has_pass(const std::string& name) const
+    {
+        return m_graph.has_pass(name);
+    }
+
+    Ref<Renderpass> Renderer::get_pass(const std::string& name) const
+    {
+        return m_graph.get_pass(name)->get_pass();
     }
 }

@@ -27,14 +27,14 @@ namespace hit
         }
 
         //test script
-        ExternalPackage* package = Platform::load_external_package("ScriptTest.dll");
-        if(package)
-        {
-            int (*fun)(int) = reinterpret_cast<int(*)(int)>(Platform::get_package_function(package, "return_value"));
-            Log::log_message(Log::LogLevel::Info, "Fun result: {}", fun(9));
-
-            Platform::unload_external_package(package);
-        }        
+        //ExternalPackage* package = Platform::load_external_package("ScriptTest.dll");
+        //if(package)
+        //{
+        //    int (*fun)(int) = reinterpret_cast<int(*)(int)>(Platform::get_package_function(package, "return_value"));
+        //    Log::log_message(Log::LogLevel::Info, "Fun result: {}", fun(9));
+        //
+        //    Platform::unload_external_package(package);
+        //}        
 
         engine.run();
 

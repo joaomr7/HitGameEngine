@@ -29,6 +29,9 @@ namespace hit
 
         inline const VulkanCommand& get_graphics_command() const { return m_graphics_commands[m_current_image_index]; }
 
+        void set_viewport(i32 x, i32 y, i32 width, i32 height);
+        void set_scissor(i32 x, i32 y, i32 width, i32 height);
+
     protected:
         bool initialize() override;
         void shutdown() override;
@@ -41,6 +44,8 @@ namespace hit
         std::vector<Ref<Texture>> get_swapchain_images() const override;
 
         Ref<Renderpass> acquire_renderpass() override;
+        Ref<RenderPipeline> acquire_render_pipeline() override;
+        Ref<Buffer> acquire_buffer() override;
 
     private:
         bool recreate_swapchain();

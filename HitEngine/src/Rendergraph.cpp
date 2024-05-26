@@ -18,7 +18,7 @@ namespace hit::helper
 
 namespace hit
 {
-	bool hit::RendergraphPass::has_resource(const std::string& resource_name) const
+	bool RendergraphPass::has_resource(const std::string& resource_name) const
 	{
 		for(auto& resource : m_resources)
 		{
@@ -306,7 +306,7 @@ namespace hit
 
 	bool Rendergraph::on_render(FrameData* frame_data)
 	{ 
-		for(auto& pass : m_passes)
+ 		for(auto& pass : m_passes)
 		{
 			auto& renderpass = pass->m_pass;
 

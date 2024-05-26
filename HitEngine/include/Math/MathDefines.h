@@ -7,11 +7,11 @@
 
 namespace hit
 {
-    constexpr f64 PI_64 = std::numbers::pi_v<f64>;
-    constexpr f32 PI_32 = std::numbers::pi_v<f32>;
+    inline constexpr f64 PI_64 = std::numbers::pi_v<f64>;
+    inline constexpr f32 PI_32 = std::numbers::pi_v<f32>;
 
-    constexpr f64 PI_rad_64 = PI_64 / 180.0;
-    constexpr f32 PI_rad_32 = PI_32 / 180.0f;
+    inline constexpr f64 PI_rad_64 = PI_64 / 180.0;
+    inline constexpr f32 PI_rad_32 = PI_32 / 180.0f;
 
     inline constexpr auto to_rad(f32 value) { return value * PI_rad_32; }
     inline constexpr auto to_rad(f64 value) { return value * PI_rad_32; }

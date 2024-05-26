@@ -20,6 +20,7 @@
 - [ ] Text rendering
 - [ ] UI
 - [ ] Fast 3D object format load
+- [X] Shaders
 
 ## Math and Physics Features:
 - [X] Vector Library

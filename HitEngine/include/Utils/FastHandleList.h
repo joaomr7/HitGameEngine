@@ -75,8 +75,6 @@ namespace hit
 		other.m_free_slot_start = -1;
 		other.m_last_slot = -1;
 		other.m_penultimate_slot = -1;
-
-		return *this;
     }
 
     template<typename T>

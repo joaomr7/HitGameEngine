@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Renderer/Rendergraph.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/Shaders/StandardShader.h"
 
 namespace hit
 {
@@ -19,6 +21,15 @@ namespace hit
 
 		void on_render(FrameData* frame_data) override;
 		bool on_resize(ui32 new_width, ui32 new_height) override;
+
+	private:
+		// temporary
+		Mat4 m_model = mat4_identity();
+
+		Ref<Buffer> m_quad;
+		Ref<Buffer> m_quad_indices;
+		Ref<Shader> m_std_shader;
+		Ref<StandardGlobalData> m_global_data;
 	};
 
 	// used for default world pass creation

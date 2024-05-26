@@ -10,7 +10,9 @@ namespace hit
     class Engine;
     class Renderer;
     class Renderpass;
+    class RenderPipeline;
     class Texture;
+    class Buffer;
 
     // API to communicate between Renderer and Renderer'Backend'
     class RendererAPI
@@ -30,6 +32,8 @@ namespace hit
         virtual std::vector<Ref<Texture>> get_swapchain_images() const = 0;
 
         virtual Ref<Renderpass> acquire_renderpass() = 0;
+        virtual Ref<RenderPipeline> acquire_render_pipeline() = 0;
+        virtual Ref<Buffer> acquire_buffer() = 0;
 
         const Engine* get_engine() { return m_engine; }
         const Renderer* get_frontend_renderer() { return m_frontend_renderer; }

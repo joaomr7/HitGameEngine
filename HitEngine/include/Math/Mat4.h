@@ -15,12 +15,12 @@ namespace hit
             Vec4 columns[4];
         };
 
-        constexpr Mat4();
-        constexpr Mat4(const Mat4&) = default;
-        constexpr Mat4(Mat4&&) noexcept = default;
+        inline constexpr Mat4();
+        inline constexpr Mat4(const Mat4&) = default;
+        inline constexpr Mat4(Mat4&&) noexcept = default;
 
-        constexpr Mat4& operator=(const Mat4&) = default;
-        constexpr Mat4& operator=(Mat4&&) = default;
+        inline constexpr Mat4& operator=(const Mat4&) = default;
+        inline constexpr Mat4& operator=(Mat4&&) = default;
 
         Mat4& add(const Mat4& other);
         Mat4& sub(const Mat4& other);
@@ -43,6 +43,8 @@ namespace hit
         Mat4 transposed() const;
         Mat4 inverse() const;
     };
+
+    inline constexpr Mat4::Mat4() : data {} { }
 
     inline Vec4& Mat4::operator[](ui64 index)
     {

@@ -25,4 +25,13 @@ namespace hit
     {
         return std::static_pointer_cast<U>(t);
     }
+
+    template <typename T>
+    using Scope = std::unique_ptr<T>;
+
+    template<typename T, typename... Args>
+    constexpr Scope<T> create_scope(Args&&... args)
+    {
+        return std::make_unique<T>(std::forward<Args>(args)...);
+    }
 }

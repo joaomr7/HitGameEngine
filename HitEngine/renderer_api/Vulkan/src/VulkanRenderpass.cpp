@@ -195,6 +195,21 @@ namespace hit
 		const auto& command_buffer = m_context->get_graphics_command();
 		const auto framebuffer = cast_ref<VulkanFramebuffer>(get_current_frame_framebuffer())->get_framebuffer();
 
+		// update viewport and scissor
+		m_context->set_viewport(
+			static_cast<i32>(m_config.render_area.x),
+			static_cast<i32>(m_config.render_area.y),
+			static_cast<i32>(m_config.render_area.width),
+			static_cast<i32>(m_config.render_area.height)
+		);
+
+		m_context->set_scissor(
+			static_cast<i32>(m_config.render_area.x),
+			static_cast<i32>(m_config.render_area.y),
+			static_cast<i32>(m_config.render_area.width),
+			static_cast<i32>(m_config.render_area.height)
+		);
+
 		// begin info
 		VkRenderPassBeginInfo begin_info{ };
 		begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

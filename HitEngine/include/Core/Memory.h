@@ -72,7 +72,7 @@ struct std::formatter<hit::MemoryUsage>
         return ctx.begin();
     }
 
-    auto format(hit::MemoryUsage usage, std::format_context& ctx) {
+    auto format(const hit::MemoryUsage& usage, std::format_context& ctx) {
         switch (usage)
         {
             case hit::MemoryUsage::Any: 

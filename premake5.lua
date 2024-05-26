@@ -57,6 +57,13 @@ group "Script"
 include "ScriptTest"
 group ""
 
+group "Tools"
+include "HitTools"
+group ""
+
+group "Test"
+include "Test"
+group ""
+
 include "HitEngine"
 include "Runtime"
-include "Test"

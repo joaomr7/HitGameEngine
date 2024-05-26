@@ -9,16 +9,16 @@ namespace hit
 {
 	struct VulkanCommandInfo
 	{
-		enum QueueType
+		enum QueueType : ui8
 		{
 			QueueGraphics,
 			QueueCompute,
 			QueueTransfer
 		};
 
+		VulkanDevice* device;
 		QueueType queue;
 		bool single_use;
-		VulkanDevice* device;
 	};
 
 	class VulkanCommand
@@ -38,8 +38,8 @@ namespace hit
 		inline const VkCommandBuffer get_command_buffer() const { return m_command_buffer; }
 
 	private:
-		VulkanCommandInfo m_command_info;
 		VkCommandBuffer m_command_buffer;
+		VulkanCommandInfo m_command_info;
 	};
 
 	bool allocate_graphics_command(VulkanDevice* device, bool single_use, VulkanCommand& command);

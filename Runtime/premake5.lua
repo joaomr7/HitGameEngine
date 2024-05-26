@@ -9,6 +9,12 @@ project "Runtime"
     targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
     objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 
+    postbuildcommands
+    {
+        "{COPY} %{wks.location}/assets %{cfg.targetdir}/assets",
+        "{COPY} %{wks.location}/assets %{wks.location}/Runtime/assets"
+    }
+
     files 
     {
         --PhysWorld

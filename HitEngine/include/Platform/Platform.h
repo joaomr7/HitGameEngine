@@ -9,7 +9,7 @@
 
 namespace hit
 {
-    // do not include Window.h here, cause need to link it just in engine
+    // do not include Window.h here, because it need to link just in engine
     // to access window attributes, use the platform api
     class Window;
     struct WindowSpecification;

@@ -5,8 +5,6 @@
 
 namespace hit
 {
-    constexpr Mat4::Mat4() : data{} { }
-
     Mat4& Mat4::add(const Mat4& other)
     {
         for (ui32 i = 0; i < 4; i++)
@@ -346,6 +344,7 @@ namespace hit
 
     Mat4 mat4_orthographic(f32 left, f32 right, f32 bottom, f32 top, f32 near, f32 far)
     {
+        // Using Left-handed coordinate system, with depth range from 0 to 1
         Mat4 ortho = mat4_identity();
 
         const f32 right_plus_left = right + left;
@@ -354,35 +353,37 @@ namespace hit
         const f32 top_plus_bottom = top + bottom;
         const f32 top_less_bottom = top - bottom;
 
-        const f32 far_plus_near = far + near;
         const f32 far_less_near = far - near;
 
         ortho[0][0] =  2.0f / right_less_left;
         ortho[1][1] =  2.0f / top_less_bottom;
-        ortho[2][2] = -2.0f / far_less_near;
-        ortho[3][0] = -right_plus_left / right_less_left;
-        ortho[3][1] = -top_plus_bottom / top_less_bottom;
-        ortho[3][2] = -far_plus_near   / far_less_near;
+        ortho[2][2] =  1.0f / far_less_near;
+        ortho[3][0] = -(right_plus_left / right_less_left);
+        ortho[3][1] = -(top_plus_bottom / top_less_bottom);
+        ortho[3][2] = -(near / far_less_near);
 
         return ortho;
     }
 
     Mat4 mat4_perspective(f32 fov, f32 aspect_ratio, f32 near, f32 far)
     {
+        // Using Left-handed coordinate system, with depth range from 0 to 1
         hit_assert(near >= 0.0f, "Perspective near must be positive.");
         hit_assert(far > 0.0f, "Perspective far must be positive.");
         hit_assert(far > near, "Perspective far must be larger than near.");
 
         fov = to_rad(fov);
         const f32 tan_half_fov = htan(fov / 2.0f);
+        const f32 far_less_near = far - near;
+        const f32 far_times_near = far * near;
 
         Mat4 perspective;
 
         perspective[0][0] = 1.0f / (aspect_ratio * tan_half_fov);
         perspective[1][1] = 1.0f / tan_half_fov;
-        perspective[2][2] = - (far + near) / (far - near);
-        perspective[3][2] = - (2.0f * far * near) / (far - near);
-        perspective[2][3] = -1.0f;
+        perspective[2][2] = far / (far_less_near);
+        perspective[3][2] = - (far_times_near) / (far_less_near);
+        perspective[2][3] = 1.0f;
 
         return perspective;
     }

@@ -52,10 +52,10 @@ namespace hit
         VkResult submit_compute_queue(const VkSubmitInfo* submit_info, VkFence fence = nullptr);
         VkResult submit_transfer_queue(const VkSubmitInfo* submit_info, VkFence fence = nullptr);
 
-        VkResult wait_graphics_queue();
-        VkResult wait_present_queue();
-        VkResult wait_compute_queue();
-        VkResult wait_transfer_queue();
+        VkResult wait_graphics_queue() const;
+        VkResult wait_present_queue() const;
+        VkResult wait_compute_queue() const;
+        VkResult wait_transfer_queue() const;
 
         void update_swapchain_support();
 

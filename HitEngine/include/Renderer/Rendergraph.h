@@ -56,10 +56,11 @@ namespace hit
 
 		bool has_resource(const std::string& resource_name) const;
 
+		inline const Ref<Renderpass>& get_pass() const { return m_pass; }
+
 	protected:
 		std::vector<RendergraphResource> m_resources;
 
-		inline const Ref<Renderpass>& get_pass() const { return m_pass; }
 		inline const Renderer* get_renderer() const { return m_renderer; }
 
 	private:

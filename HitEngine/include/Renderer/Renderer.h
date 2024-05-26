@@ -4,9 +4,12 @@
 #include "Utils/Ref.h"
 
 #include "Texture.h"
+#include "RenderPipeline.h"
 #include "Renderpass.h"
 #include "Rendergraph.h"
+#include "Buffer.h"
 
+#include <string>
 #include <vector>
 
 namespace hit
@@ -31,8 +34,14 @@ namespace hit
         inline ui16 get_frame_height() const { return m_frame_height; }
 
         Ref<Renderpass> acquire_renderpass() const;
+        Ref<RenderPipeline> acquire_render_pipeline() const;
+        Ref<Buffer> acquire_buffer() const;
 
         std::vector<Ref<Texture>> get_swapchain_images() const;
+
+    public:
+        bool has_pass(const std::string& name) const;
+        Ref<Renderpass> get_pass(const std::string& name) const;
 
     protected:
         bool initialize() override;

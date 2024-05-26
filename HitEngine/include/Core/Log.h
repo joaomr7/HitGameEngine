@@ -17,17 +17,17 @@
 #define hit_error_if(condition, fmt, ...)
 #define hit_fatal_if(condition, fmt, ...)
 #else
-#define hit_trace(fmt, ...)     hit::Log::log_message(hit::Log::LogLevel::Trace,   fmt, __VA_ARGS__)
-#define hit_info(fmt, ...)      hit::Log::log_message(hit::Log::LogLevel::Info,    fmt, __VA_ARGS__)
+#define hit_trace(fmt, ...)     hit::Log::log_message(hit::Log::LogLevel::Trace, fmt, __VA_ARGS__)
+#define hit_info(fmt, ...)      hit::Log::log_message(hit::Log::LogLevel::Info, fmt, __VA_ARGS__)
 #define hit_warning(fmt, ...)   hit::Log::log_message(hit::Log::LogLevel::Warning, fmt, __VA_ARGS__)
-#define hit_error(fmt, ...)     hit::Log::log_message(hit::Log::LogLevel::Error,   fmt, __VA_ARGS__)
-#define hit_fatal(fmt, ...)     hit::Log::log_message(hit::Log::LogLevel::Fatal,   fmt, __VA_ARGS__)
+#define hit_error(fmt, ...)     hit::Log::log_message(hit::Log::LogLevel::Error, fmt, __VA_ARGS__)
+#define hit_fatal(fmt, ...)     hit::Log::log_message(hit::Log::LogLevel::Fatal, fmt, __VA_ARGS__)
 
-#define hit_trace_if(condition, fmt, ...)       { if((condition)) { hit_trace(fmt,   __VA_ARGS__); } }
-#define hit_info_if(condition, fmt, ...)        { if((condition)) { hit_info(fmt,    __VA_ARGS__); } }
+#define hit_trace_if(condition, fmt, ...)       { if((condition)) { hit_trace(fmt, __VA_ARGS__); } }
+#define hit_info_if(condition, fmt, ...)        { if((condition)) { hit_info(fmt, __VA_ARGS__); } }
 #define hit_warning_if(condition, fmt, ...)     { if((condition)) { hit_warning(fmt, __VA_ARGS__); } }
-#define hit_error_if(condition, fmt, ...)       { if((condition)) { hit_error(fmt,   __VA_ARGS__); } }
-#define hit_fatal_if(condition, fmt, ...)       { if((condition)) { hit_fatal(fmt,   __VA_ARGS__); } }
+#define hit_error_if(condition, fmt, ...)       { if((condition)) { hit_error(fmt, __VA_ARGS__); } }
+#define hit_fatal_if(condition, fmt, ...)       { if((condition)) { hit_fatal(fmt, __VA_ARGS__); } }
 #endif
 
 namespace hit

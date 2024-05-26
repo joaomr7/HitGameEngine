@@ -1,6 +1,8 @@
 #include "VulkanRenderer.h"
 
 #include "VulkanRenderpass.h"
+#include "VulkanRenderPipeline.h"
+#include "VulkanBuffer.h"
 
 #include "Core/Engine.h"
 #include "Core/Log.h"
@@ -216,6 +218,32 @@ namespace hit
         return true;
     }
 
+    void VulkanRenderer::set_viewport(i32 x, i32 y, i32 width, i32 height)
+    {
+        VkViewport viewport;
+        viewport.x = static_cast<f32>(x);
+        viewport.y = static_cast<f32>(y) + static_cast<f32>(height);
+        viewport.width = static_cast<f32>(width);
+        viewport.height = -static_cast<f32>(height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+
+        const auto& command_buffer = get_graphics_command();
+        vkCmdSetViewport(command_buffer.get_command_buffer(), 0, 1, &viewport);
+    }
+
+    void VulkanRenderer::set_scissor(i32 x, i32 y, i32 width, i32 height)
+    {
+        VkRect2D scissor;
+        scissor.offset.x = x;
+        scissor.offset.y = y;
+        scissor.extent.width = width;
+        scissor.extent.height = height;
+
+        const auto& command_buffer = get_graphics_command();
+        vkCmdSetScissor(command_buffer.get_command_buffer(), 0, 1, &scissor);
+    }
+
     ui32 VulkanRenderer::get_swapchain_image_count() const
     {
         return m_swapchain.get_image_count();
@@ -240,6 +268,16 @@ namespace hit
     Ref<Renderpass> VulkanRenderer::acquire_renderpass()
     {
         return create_ref<VulkanRenderpass>(this);
+    }
+
+    Ref<RenderPipeline> VulkanRenderer::acquire_render_pipeline()
+    {
+        return create_ref<VulkanRenderPipeline>(this);
+    }
+
+    Ref<Buffer> VulkanRenderer::acquire_buffer()
+    {
+        return create_ref<VulkanBuffer>(this);
     }
 
     bool VulkanRenderer::recreate_swapchain()

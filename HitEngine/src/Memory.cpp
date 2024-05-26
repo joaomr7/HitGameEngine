@@ -18,6 +18,7 @@ namespace hit::Memory
 
     static MemorySystem* s_memory_system = nullptr;
 
+    // TODO: at the moment this system is unsafe
     bool initialize_memory_system()
     {
         s_memory_system = new MemorySystem();

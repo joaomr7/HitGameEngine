@@ -657,22 +657,22 @@ namespace hit
         return vkQueueSubmit(m_transfer_queue, 1, submit_info, fence);
     }
 
-    VkResult VulkanDevice::wait_graphics_queue()
+    VkResult VulkanDevice::wait_graphics_queue() const
     { 
         return vkQueueWaitIdle(m_graphics_queue);
     }
 
-    VkResult VulkanDevice::wait_present_queue()
+    VkResult VulkanDevice::wait_present_queue() const
     { 
         return vkQueueWaitIdle(m_present_queue);
     }
 
-    VkResult VulkanDevice::wait_compute_queue()
+    VkResult VulkanDevice::wait_compute_queue() const
     { 
         return vkQueueWaitIdle(m_compute_queue);
     }
 
-    VkResult VulkanDevice::wait_transfer_queue()
+    VkResult VulkanDevice::wait_transfer_queue() const
     { 
         return vkQueueWaitIdle(m_transfer_queue);
     }
