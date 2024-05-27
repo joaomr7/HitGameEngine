@@ -11,9 +11,10 @@ project "HitTools"
 
     files 
     {
-        --PhysWorld
         "%{wks.location}/HitTools/include/**.h",
+        "%{wks.location}/HitTools/vendor/stb_image/**.h",
         "%{wks.location}/HitTools/src/**.cpp",
+        "%{wks.location}/HitTools/vendor/stb_image/**.cpp",
     }
 
     includedirs 

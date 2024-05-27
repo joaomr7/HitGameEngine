@@ -143,30 +143,35 @@ namespace hit
 		auto shader = (Shader*)get_shader();
 		hit_assert(shader, "Shader is null!");
 
-		if (!shader->has_data_location(ShaderProgram::Fragment, "instance_uniform", "base_color"))
+		if (!shader->has_data_location(ShaderProgram::Fragment, "base_texture"))
 		{
-			hit_error("Can't find instance_uniform::base_color");
+			hit_error("Can't find FragmentUniform::base_color");
 			return false;
 		}
 
-		m_base_color_location = shader->get_data_location(ShaderProgram::Fragment, "instance_uniform", "base_color");
-		set_base_color(m_base_color);
+		m_base_texture_location = shader->get_data_location(ShaderProgram::Fragment, "base_texture");
+		set_base_texture(nullptr);
 
 		return true;
 	}
 
 	void StandardMaterial::release_resources()
-	{ }
+	{
+		if (m_base_texture)
+			m_base_texture->safe_release();
 
-	void StandardMaterial::set_base_color(const Vec4& base_color)
+		m_base_texture = nullptr;
+	}
+
+	void StandardMaterial::set_base_texture(const Ref<Texture>& base_texture)
 	{
 		auto shader = (Shader*)get_shader();
 		hit_assert(shader, "Shader is null!");
 
-		m_base_color = base_color;
-		if (!shader->write_data(this, m_base_color_location, sizeof(Vec4), m_base_color.elements))
+		m_base_texture = base_texture;
+		if (!shader->write_data(this, m_base_texture_location, m_base_texture))
 		{
-			hit_error("Failed to write base color to shader buffer!");
+			hit_error("Failed to set base texture to shader!");
 		}
 	}
 }

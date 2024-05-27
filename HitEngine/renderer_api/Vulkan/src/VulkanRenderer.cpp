@@ -8,6 +8,8 @@
 #include "Core/Log.h"
 #include "Platform/Platform.h"
 
+#include <array>
+
 namespace hit
 {
     bool VulkanRenderer::initialize()
@@ -49,12 +51,43 @@ namespace hit
             return false;
         }
 
+        // create default resources
+        {
+            std::array<ui8, 4> white_image { 0xFF, 0xFF, 0xFF, 0xFF };
+
+            TextureInfo texture_info;
+            texture_info.source = TextureInfo::SourceOwn;
+            texture_info.format = TextureInfo::FormatRGBA;
+            texture_info.type = TextureInfo::Type2D;
+
+            texture_info.writable = false;
+            texture_info.width = 1;
+            texture_info.height = 1;
+            texture_info.channels = 4;
+
+            texture_info.use_sampler = true;
+            texture_info.sampler_info.min_filter = SamplerInfo::FilterLinear;
+            texture_info.sampler_info.mag_filter = SamplerInfo::FilterLinear;
+            texture_info.sampler_info.wrapper = SamplerInfo::WrapperRepeat;
+
+            m_placeholder_texture = cast_ref<VulkanTexture>(acquire_texture());
+            if (!m_placeholder_texture->create(texture_info, white_image.data()))
+            {
+                hit_error("Failed to create placeholder texture!");
+                return false;
+            }
+
+            m_placeholder_texture->set_release_mode(Releseable::ModeByOwner);
+        }
+
         return true;
     }
 
     void VulkanRenderer::shutdown()
     {
         m_device.wait_idle();
+        
+        m_placeholder_texture->force_release();
 
         m_graphics_commands.clear();
 
@@ -263,6 +296,11 @@ namespace hit
         }
 
         return images;
+    }
+
+    Ref<Texture> VulkanRenderer::acquire_texture()
+    {
+        return create_ref<VulkanTexture>(this);
     }
 
     Ref<Renderpass> VulkanRenderer::acquire_renderpass()

@@ -4,6 +4,7 @@
 
 #include "VulkanCommon.h"
 #include "VulkanBuffer.h"
+#include "VulkanTexture.h"
 
 #include "Utils/FastHandleList.h"
 #include "Utils/Ref.h"
@@ -11,9 +12,12 @@
 namespace hit
 {
 	constexpr ui16 vk_pipeline_max_descriptors_per_instance = 3;
+	constexpr ui16 vk_max_textures_per_instance = 16;
 
 	struct VulkanPipelineInstance
 	{
+		Ref<VulkanTexture> textures[vk_max_textures_per_instance];
+
 		VkDescriptorSet sets[vk_pipeline_max_descriptors_per_instance];
 		bool dirty[vk_pipeline_max_descriptors_per_instance];
 	};
@@ -52,8 +56,12 @@ namespace hit
 		bool unbind_instance(const PipelineInstance& instance) override;
 
 		bool update_instance(const PipelineInstance& instance, ui64 offset, ui64 size, void* data) override;
+		bool update_instance(const PipelineInstance& instance, ui64 offset, const Ref<Texture>& texture) override;
 
+		bool has_uniform_data(ShaderProgram::Type at, const std::string& uniform_name) override;
 		bool has_uniform_data(ShaderProgram::Type at, const std::string& uniform_name, const std::string& data_name) override;
+
+		ui64 get_uniform_data_location(ShaderProgram::Type at, const std::string& uniform_name) override;
 		ui64 get_uniform_data_location(ShaderProgram::Type at, const std::string& uniform_name, const std::string& data_name) override;
 
 		inline const VkPipeline get_pipeline() const { return m_pipeline; }

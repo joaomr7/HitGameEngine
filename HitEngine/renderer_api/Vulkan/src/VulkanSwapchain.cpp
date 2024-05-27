@@ -144,6 +144,8 @@ namespace hit
 					hit_error("Failed to create swapchain textures!");
 					return false;
 				}
+
+				image_texture->set_release_mode(Releseable::ModeByOwner);
 			}
 		}
 		else
@@ -155,6 +157,8 @@ namespace hit
 					hit_error("Failed to create swapchain textures!");
 					return false;
 				}
+
+				image_texture->set_release_mode(Releseable::ModeByOwner);
 			}
 		}
 
@@ -167,7 +171,7 @@ namespace hit
 		{
 			for(auto& image : m_images)
 			{
-				image->destroy();
+				image->force_release();
 				image = nullptr;
 			}
 
@@ -197,7 +201,7 @@ namespace hit
 		{
 			for(auto& image : m_images)
 			{
-				image->destroy();
+				image->force_release();
 			}
 		}
 

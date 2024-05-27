@@ -50,10 +50,14 @@ namespace hit
         bool bind_attribure(const Ref<ShaderAttribute>& attribute);
         bool unbind_attribure(const Ref<ShaderAttribute>& attribute);
 
+        bool has_data_location(ShaderProgram::Type at, const std::string& uniform_name);
         bool has_data_location(ShaderProgram::Type at, const std::string& uniform_name, const std::string& data_name);
+
+        ui64 get_data_location(ShaderProgram::Type at, const std::string& uniform_name);
         ui64 get_data_location(ShaderProgram::Type at, const std::string& uniform_name, const std::string& data_name);
 
         bool write_data(ShaderAttribute* attribute, ui64 offset, ui64 size, void* data);
+        bool write_data(ShaderAttribute* attribute, ui64 offset, const Ref<Texture>& texture);
         bool write_constant(ShaderProgram::Type at, ui64 size, void* data);
 
     protected:

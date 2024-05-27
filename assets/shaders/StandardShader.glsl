@@ -8,7 +8,6 @@ Shader {
     VertexInput 
     {
         v_position: vec3
-        v_color: vec3
         v_uv: vec2
     }
 
@@ -21,22 +20,26 @@ Shader {
     # global uniform
     VertexUniform
     {
-	instances: 1
+	    instances: 1
 
-	Layout {
-	    projection: mat4
+	    Layout {
+	        projection: mat4
             view: mat4
-	}
+	    }
     }
 
     # material uniform
     FragmentUniform
     {
-        instances: 0
+        instances: 1000
 
-	Layout {
+	    Layout {
 	    
-	}
+	    }
+
+        TexturesMaps {
+            base_texture: texture
+        }
     }
 
     Vertex::
@@ -44,12 +47,11 @@ Shader {
         #version 450
 
         layout(location = 0) in vec3 v_position;
-        layout(location = 1) in vec3 v_color;
-        layout(location = 2) in vec2 v_uv;
+        layout(location = 1) in vec2 v_uv;
 
-        layout(location = 0) out vec3 out_color;
+        layout(location = 0) out vec2 out_uv;
 
-        layout(set=0, binding=0) uniform global_uniform
+        layout(set = 0, binding = 0) uniform global_uniform
         {
             mat4 projection;
             mat4 view;
@@ -62,8 +64,8 @@ Shader {
 
         void main()
         {
-            out_color = v_color;
-	    gl_Position = global.projection * global.view * transform.model * vec4(v_position, 1.0);
+            out_uv = v_uv;
+	        gl_Position = global.projection * global.view * transform.model * vec4(v_position, 1.0);
         }
     }
 
@@ -72,11 +74,14 @@ Shader {
         #version 450
 
         layout(location = 0) out vec4 out_color;
-        layout(location = 0) in vec3 in_color;
+
+        layout(location = 0) in vec2 in_uv;
+
+	    layout(set = 1, binding = 0) uniform sampler2D base_texture;
 
         void main()
         {
-            out_color = vec4(in_color, 1.0);
+            out_color = texture(base_texture, in_uv);
         }
     }
 }

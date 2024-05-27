@@ -512,6 +512,11 @@ namespace hit
         vkGetDeviceQueue(m_device, (ui32)queue_indices.compute_index, 0, &m_compute_queue);
         vkGetDeviceQueue(m_device, (ui32)queue_indices.transfer_index, 0, &m_transfer_queue);
 
+        m_graphics_queue_index = queue_indices.graphics_index;
+        m_present_queue_index = queue_indices.present_index;
+        m_compute_queue_index = queue_indices.compute_index;
+        m_transfer_queue_index = queue_indices.transfer_index;
+
         // create command pools
         VkCommandPoolCreateInfo graphics_pool_info{ };
         graphics_pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;

@@ -15,8 +15,8 @@ namespace hit::vulkan_helper
 	{
 		switch(type)
 		{
-			case hit::ShaderProgram::Vertex:	return VK_SHADER_STAGE_VERTEX_BIT;
-			case hit::ShaderProgram::Fragment:	return VK_SHADER_STAGE_FRAGMENT_BIT;
+			case ShaderProgram::Vertex:	return VK_SHADER_STAGE_VERTEX_BIT;
+			case ShaderProgram::Fragment:	return VK_SHADER_STAGE_FRAGMENT_BIT;
 			default: hit_assert(false, "Invalid shader program type!");
 		}
 	}
@@ -170,8 +170,8 @@ namespace hit::vulkan_helper
 	{
 		switch(type)
 		{
-			case hit::ShaderUniform::ImageSampler:		return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			case hit::ShaderUniform::UniformBuffer:		return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			case ShaderUniform::ImageSampler:		return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			case ShaderUniform::UniformBuffer:		return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			default:
 				hit_assert(false, "Invalid uniform type.");
 		}
@@ -368,11 +368,13 @@ namespace hit
 			bool has_empty_buffer = false;
 			for(auto& uniform : program.uniforms)
 			{
-				if (uniform.layout.stride() == 0)
+				if (!uniform.is_image_sampler() && uniform.layout.stride() == 0)
 				{
 					has_empty_buffer = true;
 					continue;
 				}
+
+				has_empty_buffer = false;
 
 				if(uniform.is_push_constant())
 				{
@@ -391,6 +393,7 @@ namespace hit
 					binding.descriptorCount = 1;
 					binding.descriptorType = vulkan_helper::uniform_type_to_vulkan_descriptor_type(uniform.type);
 					binding.stageFlags = vulkan_helper::program_type_to_vulkan_stage(program.type);
+					binding.pImmutableSamplers = nullptr;
 
 					bindings.push_back(binding);
 				}
@@ -406,8 +409,7 @@ namespace hit
 				layout_info.bindingCount = bindings.size();
 				layout_info.pBindings = bindings.data();
 
-				m_sets_configs.emplace_back();
-				auto& set_config = m_sets_configs.back();
+				auto& set_config = m_sets_configs.emplace_back();
 				
 				// create descriptor layout
 				if (!check_vk_result(vkCreateDescriptorSetLayout(device->get_device(), &layout_info, device->get_alloc_callback(), &set_config.layout)))
@@ -424,11 +426,13 @@ namespace hit
 				std::vector<VkDescriptorPoolSize> pool_sizes;
 				for (auto& uniform : program.uniforms)
 				{
-					if (uniform.layout.stride() == 0)
-						continue;
-
 					if (uniform.type == ShaderUniform::PushConstant)
 						continue;
+
+					if (!uniform.is_image_sampler() && uniform.layout.stride() == 0)
+						continue;
+
+					set_config.uniforms.push_back(uniform);
 
 					VkDescriptorPoolSize pool_size;
 					pool_size.type = vulkan_helper::uniform_type_to_vulkan_descriptor_type(uniform.type);
@@ -442,6 +446,7 @@ namespace hit
 						create_buffer = true;
 					}
 				}
+				set_config.uniforms_size = uniform_buffer_size;
 
 				// create descriptor pool
 				VkDescriptorPoolCreateInfo pool_info { };
@@ -476,8 +481,6 @@ namespace hit
 					}
 				}
 
-				set_config.uniforms_size = uniform_buffer_size;
-				set_config.uniforms = program.uniforms;
 				descriptor_sets_layouts.push_back(set_config.layout);
 			}
 		}
@@ -677,6 +680,10 @@ namespace hit
 			vk_instance->dirty[i] = true;
 		}
 
+		// set textures to nullptr
+		for (auto& texture : vk_instance->textures)
+			texture = nullptr;
+
 		return out_instance;
 	}
 
@@ -724,6 +731,15 @@ namespace hit
 			intern_instance->dirty[i] = true;
 		}
 
+		// TODO: safe free textures
+		for (auto& texture : intern_instance->textures)
+		{
+			if (texture)
+				texture->safe_release();
+
+			texture = nullptr;
+		}
+
 		instance_list.remove(vk_instance);
 		instance = PipelineInstance();
 	}
@@ -762,17 +778,18 @@ namespace hit
 		// update set if it's dirty, only once per frame
 		if (intern_instance->dirty[current_frame])
 		{
+			std::vector<VkDescriptorImageInfo> image_infos;
 			std::vector<VkDescriptorBufferInfo> buffer_infos;
 			std::vector<VkWriteDescriptorSet> writes;
 
 			auto vk_buffer = (VulkanBuffer*)m_sets_configs[instance.bind].buffer.get();
-			vk_buffer->bind();
 
+			if(vk_buffer)
+				vk_buffer->bind();
+
+			ui64 image_offset = 0;
 			for (ui64 binding = 0; auto & uniform : m_sets_configs[instance.bind].uniforms)
 			{
-				if (uniform.is_push_constant())
-					continue;
-
 				VkWriteDescriptorSet write { };
 				write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 				write.dstSet = vk_set;
@@ -782,7 +799,7 @@ namespace hit
 
 				if (uniform.is_uniform_buffer())
 				{
-					VkDescriptorBufferInfo buffer_info;
+					VkDescriptorBufferInfo buffer_info { };
 					buffer_info.buffer = vk_buffer->get_buffer();
 					buffer_info.offset = 0;
 					buffer_info.range = uniform.layout.stride();
@@ -794,8 +811,21 @@ namespace hit
 				}
 				else if (uniform.is_image_sampler())
 				{
-					hit_warning("Global image sampler not supported yet");
-					continue;
+					auto texture = intern_instance->textures[image_offset++];
+
+					if (!texture)
+					{
+						texture = m_context->get_placeholder_texture();
+					}
+
+					VkDescriptorImageInfo image_info { };
+					image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					image_info.imageView = texture->get_view();
+					image_info.sampler = texture->get_sampler();
+
+					image_infos.push_back(image_info);
+					write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+					write.pImageInfo = &image_infos.back();
 				}
 				else
 				{
@@ -811,7 +841,7 @@ namespace hit
 		}
 
 		auto command = m_context->get_graphics_command().get_command_buffer();
-		vkCmdBindDescriptorSets(command, VK_PIPELINE_BIND_POINT_GRAPHICS, m_layout, 0, 1, &vk_set, 0, nullptr);
+		vkCmdBindDescriptorSets(command, VK_PIPELINE_BIND_POINT_GRAPHICS, m_layout, instance.bind, 1, &vk_set, 0, nullptr);
 
 		return true;
 	}
@@ -864,6 +894,67 @@ namespace hit
 		return true;
 	}
 
+	bool VulkanRenderPipeline::update_instance(const PipelineInstance& instance, ui64 offset, const Ref<Texture>& texture)
+	{
+		auto device = m_context->get_device();
+
+		if (!instance.is_valid())
+		{
+			hit_error("Can't update invalid pipeline instance!");
+			return false;
+		}
+
+		if (m_sets_configs.empty() || instance.bind >= m_sets_configs.size())
+		{
+			hit_error("Pipeline has no uniform set to be updated at bind {}.", instance.bind);
+			return false;
+		}
+
+		auto& instance_list = m_sets_configs[instance.bind].instances;
+		Handle<VulkanPipelineInstance> vk_instance = instance.handle;
+
+		auto intern_instance = instance_list.get(vk_instance);
+
+		if (!intern_instance)
+		{
+			hit_error("Internal pipeline instance is null!");
+			return false;
+		}
+
+		// safe release old texture
+		if (intern_instance->textures[offset])
+		{
+			intern_instance->textures[offset]->safe_release();
+			intern_instance->textures[offset] = nullptr;
+		}
+
+		// set texture
+		intern_instance->textures[offset] = cast_ref<VulkanTexture>(texture);
+
+		// invalidate sets
+		for (auto& d : intern_instance->dirty) d = true;
+
+		return true;
+	}
+
+	bool VulkanRenderPipeline::has_uniform_data(ShaderProgram::Type at, const std::string& uniform_name)
+	{
+		if ((ui64)at >= m_sets_configs.size())
+		{
+			return false;
+		}
+
+		for (auto& uniform : m_sets_configs[(ui64)at].uniforms)
+		{
+			if (uniform.name == uniform_name)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	bool VulkanRenderPipeline::has_uniform_data(ShaderProgram::Type at, const std::string& uniform_name, const std::string& data_name)
 	{
 		if ((ui64)at >= m_sets_configs.size())
@@ -880,6 +971,33 @@ namespace hit
 		}
 
 		return false;
+	}
+
+	ui64 VulkanRenderPipeline::get_uniform_data_location(ShaderProgram::Type at, const std::string& uniform_name)
+	{
+		hit_assert((ui64)at < m_sets_configs.size(), "Out of bounds program!");
+
+		i64 image_offset = -1;
+		for (auto& uniform : m_sets_configs[(ui64)at].uniforms)
+		{
+			if (uniform.is_image_sampler())
+			{
+				image_offset++;
+			}
+
+			if (uniform.name == uniform_name)
+			{
+				if (uniform.is_image_sampler())
+				{
+					return image_offset;
+				}
+
+				return uniform.layout[0].offset;
+			}
+		}
+
+		hit_assert(false, "Can't find uniform '{}'!", uniform_name);
+		return 0;
 	}
 
 	ui64 VulkanRenderPipeline::get_uniform_data_location(ShaderProgram::Type at, const std::string& uniform_name, const std::string& data_name)

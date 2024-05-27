@@ -33,6 +33,8 @@ namespace hit
         inline ui16 get_frame_width() const { return m_frame_width; }
         inline ui16 get_frame_height() const { return m_frame_height; }
 
+        Ref<Texture> acquire_texture() const;
+
         Ref<Renderpass> acquire_renderpass() const;
         Ref<RenderPipeline> acquire_render_pipeline() const;
         Ref<Buffer> acquire_buffer() const;

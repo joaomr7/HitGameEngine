@@ -29,9 +29,19 @@ namespace hit
 		return m_pipeline->unbind_instance(attribute->m_instance);
 	}
 
+	bool Shader::has_data_location(ShaderProgram::Type at, const std::string& uniform_name)
+	{
+		return m_pipeline->has_uniform_data(at, uniform_name);
+	}
+
 	bool Shader::has_data_location(ShaderProgram::Type at, const std::string& uniform_name, const std::string& data_name)
 	{
 		return m_pipeline->has_uniform_data(at, uniform_name, data_name);
+	}
+
+	ui64 Shader::get_data_location(ShaderProgram::Type at, const std::string& uniform_name)
+	{
+		return m_pipeline->get_uniform_data_location(at, uniform_name);
 	}
 
 	ui64 Shader::get_data_location(ShaderProgram::Type at, const std::string& uniform_name, const std::string& data_name)
@@ -43,6 +53,12 @@ namespace hit
 	{
 		hit_assert(attribute, "Attribute is null!");
 		return m_pipeline->update_instance(attribute->m_instance, offset, size, data);
+	}
+
+	bool Shader::write_data(ShaderAttribute* attribute, ui64 offset, const Ref<Texture>& texture)
+	{
+		hit_assert(attribute, "Attribute is null!");
+		return m_pipeline->update_instance(attribute->m_instance, offset, texture);
 	}
 
 	bool Shader::write_constant(ShaderProgram::Type at, ui64 size, void* data)

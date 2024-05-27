@@ -131,8 +131,12 @@ namespace hit
 		virtual bool unbind_instance(const PipelineInstance& instance) = 0;
 
 		virtual bool update_instance(const PipelineInstance& instance, ui64 offset, ui64 size, void* data) = 0;
+		virtual bool update_instance(const PipelineInstance& instance, ui64 offset, const Ref<Texture>& texture) = 0;
 
+		virtual bool has_uniform_data(ShaderProgram::Type at, const std::string& uniform_name) = 0;
 		virtual bool has_uniform_data(ShaderProgram::Type at, const std::string& uniform_name, const std::string& data_name) = 0;
+		
+		virtual ui64 get_uniform_data_location(ShaderProgram::Type at, const std::string& uniform_name) = 0;
 		virtual ui64 get_uniform_data_location(ShaderProgram::Type at, const std::string& uniform_name, const std::string& data_name) = 0;
 	};
 }

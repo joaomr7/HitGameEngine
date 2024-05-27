@@ -87,6 +87,7 @@ namespace hit::config
 		void add_inner_block(const Block& block);
 
 		const std::map<std::string, Property>& get_properties() const { return m_properties; }
+		const std::map<std::string, Ref<Block>> get_blocks() const { return m_inner_blocks; }
 
 	private:
 		std::string m_identifier;

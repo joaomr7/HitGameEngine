@@ -3,6 +3,7 @@
 #include "Core/Types.h"
 #include "Math/Math.h"
 #include "Renderer/Shader.h"
+#include "Renderer/Texture.h"
 
 namespace hit
 {
@@ -41,10 +42,10 @@ namespace hit
 		bool create_resources() override;
 		void release_resources() override;
 
-		void set_base_color(const Vec4& base_color);
+		void set_base_texture(const Ref<Texture>& base_texture);
 
 	private:
-		ui64 m_base_color_location;
-		Vec4 m_base_color;
+		Ref<Texture> m_base_texture;
+		ui64 m_base_texture_location;
 	};
 }

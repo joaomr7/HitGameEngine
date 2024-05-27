@@ -117,6 +117,11 @@ namespace hit
         m_frame_generation++;
     }
 
+    Ref<Texture> Renderer::acquire_texture() const
+    {
+        return m_backend_renderer->acquire_texture();
+    }
+
     Ref<Renderpass> Renderer::acquire_renderpass() const
     {
         return m_backend_renderer->acquire_renderpass();

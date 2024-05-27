@@ -65,6 +65,7 @@ namespace hit::helper
 
 		return data;
 	}
+
 }
 
 namespace hit
@@ -213,10 +214,6 @@ namespace hit
 
 			if(shader->has_inner_block("VertexUniform"))
 			{
-				ShaderUniform vertex_uniform;
-				vertex_uniform.type = ShaderUniform::UniformBuffer;
-				vertex_uniform.name = "VertexUniform";
-
 				std::vector<std::pair<ShaderData, std::string>> layout;
 				auto uniform = shader->get_inner_block("VertexUniform");
 
@@ -248,6 +245,9 @@ namespace hit
 						}
 					}
 
+					ShaderUniform vertex_uniform;
+					vertex_uniform.type = ShaderUniform::UniformBuffer;
+					vertex_uniform.name = "VertexUniform";
 					vertex_uniform.layout = BufferLayout(layout);
 
 					source.program.uniforms.push_back(vertex_uniform);
@@ -266,10 +266,6 @@ namespace hit
 			
 			if(shader->has_inner_block("FragmentUniform"))
 			{
-				ShaderUniform fragment_uniform;
-				fragment_uniform.type = ShaderUniform::UniformBuffer;
-				fragment_uniform.name = "FragmentUniform";
-
 				std::vector<std::pair<ShaderData, std::string>> layout;
 				auto uniform = shader->get_inner_block("FragmentUniform");
 
@@ -289,22 +285,46 @@ namespace hit
 
 				}
 
-				if (uniform->has_inner_block("Layout"))
+				for (auto& [identifier, block] : uniform->get_blocks())
 				{
-					auto layout_block = uniform->get_inner_block("Layout");
-
-					for (const auto& [identifier, property] : layout_block->get_properties())
+					if (identifier == "Layout")
 					{
-						if (property.is_single() && property.get_single_value().is_string())
+						for (const auto& [identifier, property] : block->get_properties())
 						{
-							auto data = helper::str_to_shader_data(property.get_single_value().get_string());
-							layout.push_back({ data, identifier });
+							if (property.is_single() && property.get_single_value().is_string())
+							{
+								auto data = helper::str_to_shader_data(property.get_single_value().get_string());
+								layout.push_back({ data, identifier });
+							}
+						}
+
+						ShaderUniform fragment_uniform;
+						fragment_uniform.type = ShaderUniform::UniformBuffer;
+						fragment_uniform.name = "FragmentUniform";
+						fragment_uniform.layout = BufferLayout(layout);
+
+						source.program.uniforms.push_back(fragment_uniform);
+					}
+					else if (identifier == "TexturesMaps")
+					{
+						for (const auto& [identifier, property] : block->get_properties())
+						{
+							if (property.is_single() && property.get_single_value().is_string())
+							{
+								if (!str_insensitive_compare(property.get_single_value().get_string(), "texture"))
+								{
+									hit_error("Invalid type in FragmentUniform::TextureMaps: '{}'.", property.get_single_value().get_string());
+									break;
+								}
+
+								ShaderUniform texture_uniform;
+								texture_uniform.name = identifier;
+								texture_uniform.type = ShaderUniform::ImageSampler;
+
+								source.program.uniforms.push_back(texture_uniform);
+							}
 						}
 					}
-
-					fragment_uniform.layout = BufferLayout(layout);
-
-					source.program.uniforms.push_back(fragment_uniform);
 				}
 			}
 

@@ -1,6 +1,6 @@
 # Hit Game Engine
 
-![HIT](assets/HIT_logo.png)
+![HIT](assets/images/HIT_logo.png)
 
 Hit Game Engine is an attempt to make a cross-platform, fast, simple, intuitive, safe and open-source game engine.
 

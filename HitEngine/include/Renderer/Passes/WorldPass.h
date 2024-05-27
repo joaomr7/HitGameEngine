@@ -30,6 +30,7 @@ namespace hit
 		Ref<Buffer> m_quad_indices;
 		Ref<Shader> m_std_shader;
 		Ref<StandardGlobalData> m_global_data;
+		Ref<StandardMaterial> m_std_material;
 	};
 
 	// used for default world pass creation

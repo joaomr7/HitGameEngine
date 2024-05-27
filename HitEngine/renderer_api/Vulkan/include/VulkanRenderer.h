@@ -7,6 +7,7 @@
 #include "VulkanDevice.h"
 #include "VulkanSwapchain.h"
 #include "VulkanCommand.h"
+#include "VulkanTexture.h"
 
 #include <vector>
 
@@ -29,8 +30,20 @@ namespace hit
 
         inline const VulkanCommand& get_graphics_command() const { return m_graphics_commands[m_current_image_index]; }
 
+        inline Ref<VulkanTexture> get_placeholder_texture() const { return m_placeholder_texture; }
+
+    public:
         void set_viewport(i32 x, i32 y, i32 width, i32 height);
         void set_scissor(i32 x, i32 y, i32 width, i32 height);
+
+        ui32 get_swapchain_image_count() const override;
+        const Ref<Texture> get_swapchain_image(ui32 index) const override;
+        std::vector<Ref<Texture>> get_swapchain_images() const override;
+
+        Ref<Texture> acquire_texture() override;
+        Ref<Renderpass> acquire_renderpass() override;
+        Ref<RenderPipeline> acquire_render_pipeline() override;
+        Ref<Buffer> acquire_buffer() override;
 
     protected:
         bool initialize() override;
@@ -38,14 +51,6 @@ namespace hit
 
         bool begin_frame() override;
         bool end_frame() override;
-
-        ui32 get_swapchain_image_count() const override;
-        const Ref<Texture> get_swapchain_image(ui32 index) const override;
-        std::vector<Ref<Texture>> get_swapchain_images() const override;
-
-        Ref<Renderpass> acquire_renderpass() override;
-        Ref<RenderPipeline> acquire_render_pipeline() override;
-        Ref<Buffer> acquire_buffer() override;
 
     private:
         bool recreate_swapchain();
@@ -71,5 +76,8 @@ namespace hit
         std::vector<VkFence> m_in_flight_fences;
 
         std::vector<VkFence*> m_images_in_flight;
+
+        // default resources
+        Ref<VulkanTexture> m_placeholder_texture;
     };
 }

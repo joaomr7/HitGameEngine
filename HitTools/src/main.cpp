@@ -1,4 +1,6 @@
 #include "Shader/ShaderCompiler.h"
+#include "Image/ImageLoader.h"
+
 #include "Core/Memory.h"
 #include "Core/Log.h"
 
@@ -47,6 +49,7 @@ int main(int argc, char** argv)
         hit_info("Usage: HitTools -[module] [module options]");
         hit_trace("Available modules:");
         hit_trace("\t 1. shader_compile [options: (output_directoy) (list of shader files to be compiled)]");
+        hit_trace("\t 2. image_loader [options: (output_directoy) (list of images files to load)]");
         return 0;
     }
 
@@ -60,6 +63,10 @@ int main(int argc, char** argv)
         if(module == "-shader_compile")
         {
             return_value = shader_compiler_entry_point(options);
+        }
+        else if (module == "-image_loader")
+        {
+            return_value = image_loader_entry_point(options);
         }
         else
         {

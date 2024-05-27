@@ -75,6 +75,11 @@ namespace hit
         inline const VkQueue get_compute_queue() const { return m_compute_queue; }
         inline const VkQueue get_transfer_queue() const { return m_transfer_queue; }
 
+        inline const ui32 get_graphics_queue_index() const { return m_graphics_queue_index; }
+        inline const ui32 get_present_queue_index() const { return m_present_queue_index; }
+        inline const ui32 get_compute_queue_index() const { return m_compute_queue_index; }
+        inline const ui32 get_transfer_queue_index() const { return m_transfer_queue_index; }
+
         inline const VkCommandPool get_graphics_command_pool() const { return m_graphics_command_pool; }
         inline const VkCommandPool get_present_command_pool() const { return m_present_command_pool; }
         inline const VkCommandPool get_compute_command_pool() const { return m_compute_command_pool; }
@@ -108,9 +113,16 @@ namespace hit
 
         // vulkan queues
         VkQueue m_graphics_queue = nullptr;
+        ui32 m_graphics_queue_index;
+
         VkQueue m_present_queue = nullptr;
+        ui32 m_present_queue_index;
+
         VkQueue m_compute_queue = nullptr;
+        ui32 m_compute_queue_index;
+
         VkQueue m_transfer_queue = nullptr;
+        ui32 m_transfer_queue_index;
 
         // command pools
         VkCommandPool m_graphics_command_pool = nullptr;
