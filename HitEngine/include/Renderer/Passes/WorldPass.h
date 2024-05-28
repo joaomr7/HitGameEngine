@@ -19,18 +19,7 @@ namespace hit
 		bool initialize() override;
 		void shutdown() override;
 
-		void on_render(FrameData* frame_data) override;
 		bool on_resize(ui32 new_width, ui32 new_height) override;
-
-	private:
-		// temporary
-		Mat4 m_model = mat4_identity();
-
-		Ref<Buffer> m_quad;
-		Ref<Buffer> m_quad_indices;
-		Ref<Shader> m_std_shader;
-		Ref<StandardGlobalData> m_global_data;
-		Ref<StandardMaterial> m_std_material;
 	};
 
 	// used for default world pass creation

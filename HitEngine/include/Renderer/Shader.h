@@ -5,7 +5,6 @@
 
 #include "ShaderTypes.h"
 #include "RenderPipeline.h"
-#include "Renderer.h"
 
 #include <string>
 #include <string_view>
@@ -13,6 +12,7 @@
 
 namespace hit
 {
+    class Renderer;
     class Shader;
 
     class ShaderAttribute

@@ -29,7 +29,7 @@ namespace hit
         Engine() = default;
         ~Engine() = default;
 
-        bool initialize(EngineData data);
+        bool initialize(EngineData data, const Ref<Module>& application_module);
         void shutdown();
 
         void run();

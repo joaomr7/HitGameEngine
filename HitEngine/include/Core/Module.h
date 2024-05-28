@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Types.h"
+#include "Platform/Event.h"
 #include "Utils/Ref.h"
 
 #include <string>
@@ -21,6 +22,8 @@ namespace hit
         virtual void shutdown() = 0;
         virtual bool execute() = 0;
 
+        virtual void on_event(Event& event) { }
+
         const Engine* get_engine() { return m_engine; }
 
     private:
@@ -40,6 +43,8 @@ namespace hit
         void shutdown_pipeline();
 
         bool execute_modules();
+
+        void handle_modules_events(Event& event);
 
         void set_engine(Engine* engine);
         bool add_module(const std::string& name, const Ref<Module>& module);

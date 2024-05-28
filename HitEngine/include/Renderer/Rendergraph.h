@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Core/Types.h"
-#include "Renderer/Renderpass.h"
 #include "Utils/Ref.h"
+
+#include "Renderer/Renderpass.h"
+#include "Renderer/CommandQueue.h"
 
 #include <vector>
 #include <array>
@@ -15,8 +17,6 @@ namespace hit
 	class Renderer;
 	class Rendergraph;
 	class UnbakedRendergraph;
-
-	struct FrameData { };
 
 	struct RendergraphResource
 	{
@@ -51,8 +51,9 @@ namespace hit
 		virtual bool initialize() = 0;
 		virtual void shutdown() = 0;
 
-		virtual void on_render(FrameData* frame_data) = 0;
 		virtual bool on_resize(ui32 new_width, ui32 new_height) = 0;
+
+		void add_render_command(Command&& command);
 
 		bool has_resource(const std::string& resource_name) const;
 
@@ -65,6 +66,8 @@ namespace hit
 
 	private:
 		Ref<Renderpass> m_pass;
+		CommandQueue m_render_command_queue;
+
 		Renderer* m_renderer;
 		
 		friend UnbakedRendergraph;
@@ -138,7 +141,7 @@ namespace hit
 		bool initialize(const Renderer* renderer, const UnbakedRendergraph& unbaked);
 		void shutdown();
 
-		bool on_render(FrameData* frame_data);
+		bool on_render();
 		bool on_resize(ui32 new_width, ui32 new_height);
 
 		bool has_pass(const std::string& pass_name) const;

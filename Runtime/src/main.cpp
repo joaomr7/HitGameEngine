@@ -1,4 +1,5 @@
 #include "HitEngineEntry.h"
+#include "Launcher.h"
 
 namespace hit
 {
@@ -19,7 +20,7 @@ namespace hit
             data.renderer_config.vsync = true;
             data.renderer_config.power_save_mode = false;
 
-            if(!engine.initialize(data))
+            if(!engine.initialize(data, create_ref<Launcher>()))
             {
                 hit_fatal("Failed to initialize engine!");
                 return -1;

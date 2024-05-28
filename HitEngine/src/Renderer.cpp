@@ -94,7 +94,7 @@ namespace hit
             }
         }
 
-        if(!m_graph.on_render(&m_frame_data)) [[unlikely]]
+        if(!m_graph.on_render()) [[unlikely]]
         {
             hit_error("Render graph failed!");
             return false;
@@ -147,8 +147,8 @@ namespace hit
         return m_graph.has_pass(name);
     }
 
-    Ref<Renderpass> Renderer::get_pass(const std::string& name) const
+    Ref<RendergraphPass> Renderer::get_pass(const std::string& name) const
     {
-        return m_graph.get_pass(name)->get_pass();
+        return m_graph.get_pass(name);
     }
 }

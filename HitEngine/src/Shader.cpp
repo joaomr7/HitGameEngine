@@ -1,6 +1,8 @@
 #include "Renderer/Shader.h"
 #include "File/SerialFile.h"
 
+#include "Renderer/Renderer.h"
+
 namespace hit
 {
 	bool Shader::bind()

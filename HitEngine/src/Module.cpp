@@ -52,6 +52,14 @@ namespace hit
         return true;
     }
 
+    void ModulePipeline::handle_modules_events(Event& event)
+    {
+        for (auto& module : m_modules)
+        {
+            module->on_event(event);
+        }
+    }
+
     void ModulePipeline::set_engine(Engine* engine)
     {
         hit_assert(engine, "Setting an invalid Engine to modules pipeline system!");

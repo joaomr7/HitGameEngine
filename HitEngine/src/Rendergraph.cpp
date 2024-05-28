@@ -18,6 +18,11 @@ namespace hit::helper
 
 namespace hit
 {
+	void RendergraphPass::add_render_command(Command&& command)
+	{
+		m_render_command_queue.add_command(std::move(command));
+	}
+
 	bool RendergraphPass::has_resource(const std::string& resource_name) const
 	{
 		for(auto& resource : m_resources)
@@ -304,19 +309,23 @@ namespace hit
 		}
 	}
 
-	bool Rendergraph::on_render(FrameData* frame_data)
-	{ 
- 		for(auto& pass : m_passes)
+	bool Rendergraph::on_render()
+	{
+		for (auto& pass : m_passes)
 		{
 			auto& renderpass = pass->m_pass;
 
-			if(!renderpass->begin()) [[unlikely]]
+			if (!renderpass->begin()) [[unlikely]]
 			{
 				hit_error("Failed to begin renderpass!");
 				return false;
 			}
 
-			pass->on_render(frame_data);
+			if (!pass->m_render_command_queue.execute_and_flush()) [[unlikely]]
+			{
+				hit_error("Failed to execute renderpass render commands!");
+				return false;
+			}
 
 			renderpass->end();
 		}

@@ -4,7 +4,7 @@
 
 namespace hit
 {
-    bool Engine::initialize(EngineData data)
+    bool Engine::initialize(EngineData data, const Ref<Module>& application_module)
     {
         if(!Log::initialize_log_system())
         {
@@ -22,6 +22,11 @@ namespace hit
         m_modules.set_engine(this);
         m_modules.add_module("Platform", create_ref<Platform>());
         m_modules.add_module("Renderer", create_ref<Renderer>());
+
+        if (application_module)
+        {
+            m_modules.add_module("Application", application_module);
+        }
 
         m_invalid_window_size = false;
 
@@ -73,6 +78,8 @@ namespace hit
 
         handler.handle<WindowResizeEvent>(bind_event_function(Engine::handle_window_resize_event, this));
         handler.handle<WindowCloseEvent>(bind_event_function(Engine::handle_window_close_event, this));
+
+        m_modules.handle_modules_events(event);
     }
 
     bool Engine::handle_window_resize_event(WindowResizeEvent& event)

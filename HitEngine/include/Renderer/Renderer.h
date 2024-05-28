@@ -43,7 +43,7 @@ namespace hit
 
     public:
         bool has_pass(const std::string& name) const;
-        Ref<Renderpass> get_pass(const std::string& name) const;
+        Ref<RendergraphPass> get_pass(const std::string& name) const;
 
     protected:
         bool initialize() override;
@@ -60,7 +60,6 @@ namespace hit
         void resize(ui16 width, ui16 height);
 
     private:
-        FrameData m_frame_data;
         Rendergraph m_graph;
 
     private:
